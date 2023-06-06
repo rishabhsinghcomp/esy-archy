@@ -1,8 +1,5 @@
 # esy-archy
 This repo contains an org file which can be used to set a arch-hyprland environment based on emacs for better Desktop experience.
-
-
-
 **Requirements**
 - Basic Arch Setup [refer Pacakge section in config.org ]
 - emacs-nativecomp

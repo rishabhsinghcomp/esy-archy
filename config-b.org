@@ -564,43 +564,6 @@ specifically) to exit the transient key map.
 
 
 ** Org Mode
-*** Better Font Faces
-**** info
-The efs/org-font-setup function configures various text faces to tweak
-the sizes of headings and use variable width fonts in most cases so
-that it looks more like we’re editing a document in org-mode. We
-switch back to fixed width (monospace) fonts for code blocks and
-tables so that they display correctly.
-**** code
-#+begin_src emacs-lisp
-
-(defun efs/org-font-setup ()
-  ;; Replace list hyphen with dot
-  (font-lock-add-keywords 'org-mode
-                          '(("^ *\\([-]\\) "
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-
-  ;; Set faces for heading levels
-  (dolist (face '((org-level-1 . 1.2)
-                  (org-level-2 . 1.1)
-                  (org-level-3 . 1.05)
-                  (org-level-4 . 1.0)
-                  (org-level-5 . 1.1)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font "JetBrainsMono Nerd Font Propo " :weight 'regular :height (cdr face)))
-
-  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
-
-#+end_src
 *** Basic Config
 **** info
 This section contains the basic configuration for org-mode plus the
@@ -736,6 +699,43 @@ Part 6 for a full explanation.
     (lambda () (interactive) (org-capture nil "jj")))
 
   (efs/org-font-setup))
+
+#+end_src
+*** Better Font Faces
+**** info
+The efs/org-font-setup function configures various text faces to tweak
+the sizes of headings and use variable width fonts in most cases so
+that it looks more like we’re editing a document in org-mode. We
+switch back to fixed width (monospace) fonts for code blocks and
+tables so that they display correctly.
+**** code
+#+begin_src emacs-lisp
+
+(defun efs/org-font-setup ()
+  ;; Replace list hyphen with dot
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+  ;; Set faces for heading levels
+  (dolist (face '((org-level-1 . 1.2)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :font "JetBrainsMono Nerd Font Propo " :weight 'regular :height (cdr face)))
+
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
 #+end_src
 *** Nicer Heading Bullets
@@ -2747,10 +2747,11 @@ WantedBy=multi-user.target
 
 
 * esy-archy
-**  basics layer arch
+** OUTLINE
+***  basics layer arch
   refr freecodecamp Handbook
 
-**  Hypralnd Setup
+***  Hypralnd Setup
 - hyprland-git (AUR)
   or manually compile using cmake from github
 - Must have
@@ -2769,12 +2770,12 @@ WantedBy=multi-user.target
 - Configure using HYPRV2 ++ rish Script
 
 
-** Emacs Setup
+*** Emacs Setup
 THis is the best software which was ever created
 - set is using rish+SC
 
 
-** Other Application
+*** Other Application
 - Bluetooth
 - pipwire utilities
 - sww
@@ -2788,18 +2789,14 @@ o
 
 
 
-
 ** README
 :PROPERTIES:
 :header-args: :tangle /home/rish/desktop/esy-archy/readme.md
 :END:
 this readme is for esy-arch repo
 #+begin_src html
-  # esy-archy
+# esy-archy
 This repo contains an org file which can be used to set a arch-hyprland environment based on emacs for better Desktop experience.
-
-
-
 **Requirements**
 - Basic Arch Setup [refer Pacakge section in config.org ]
 - emacs-nativecomp
@@ -2825,4 +2822,49 @@ Mentions
 - HYPRV2 [https://github.com/SolDoesTech/HyprV2.git]
 - rish [ https://github.com/rishabhsinghcomp]
 
-#+end_
+#+end_src
+
+
+** SCRIPT
+:PROPERTIES:
+:header-args: :tangle ~/desktop/esy-archy/setup
+    :END:
+*** info
+creating a script which can be used by genral user to setup the emacs and configurational files
+#+begin_src sh
+
+#+end_src
+*** code
+#+begin_src sh
+     #!/bin/bash
+
+
+
+    #for ease of access putting .emacs.d in .config
+  echo "Creating emacs directory in .config"
+    if ! (ls ~/ | grep -q ".emacs.d") ;then
+        mkdir ~/.config/.emacs.d
+        touch ~/.config/.emacs.d/.emacs
+
+    else
+        mv ~/.emacs.d  ~/.config/
+        mv ~/.emacs ~/.config/.emacs.d || touch ~.config/.emacs.d/.emacs 
+    fi
+    ln -s ~/.config/.emacs.d ~/.emacs.d
+    ln -s ~/.config/.emacs.d/.emacs ~/.emacs
+
+
+  cat bse.emacs >> ~.config/.emacs.d/.emacs
+
+  echo "Opening Emacs to install necessary packages"
+  sleep 5
+
+  echo "BASIC INSTALLATION DONE---"
+
+  echo "Open config.org from emacs"
+  echo "run command 'org-babel-tangle' "
+  echo "Restart emacs"
+
+
+#+end_src
+ 

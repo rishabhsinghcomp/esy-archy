@@ -1,0 +1,30 @@
+
+
+#!/bin/bash
+
+
+
+  #for ease of access putting .emacs.d in .config
+echo "Creating emacs directory in .config"
+  if ! (ls ~/ | grep -q ".emacs.d") ;then
+      mkdir ~/.config/.emacs.d
+      touch ~/.config/.emacs.d/.emacs
+
+  else
+      mv ~/.emacs.d  ~/.config/
+      mv ~/.emacs ~/.config/.emacs.d || touch ~.config/.emacs.d/.emacs 
+  fi
+  ln -s ~/.config/.emacs.d ~/.emacs.d
+  ln -s ~/.config/.emacs.d/.emacs ~/.emacs
+
+
+cat bse.emacs >> ~.config/.emacs.d/.emacs
+
+echo "Opening Emacs to install necessary packages"
+sleep 5
+
+echo "BASIC INSTALLATION DONE---"
+
+echo "Open config.org from emacs"
+echo "run command 'org-babel-tangle' "
+echo "Restart emacs"
