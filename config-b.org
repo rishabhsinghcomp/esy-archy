@@ -1,0 +1,2828 @@
+#+PROPERTY: header-args :auto_tangle:t :mkdirp yes
+
+
+* Hyprland  
+:PROPERTIES:
+:header-args: :tangle ~/.config/hypr/hyprland.conf
+  :END:
+** Monitor
+ See https://wiki.hyprland.org/Configuring/Monitors/
+#+begin_src conf
+  monitor=eDP-1,1920x1080@144,0x0,1
+  #monitor=,preferred,auto,1,mirror,eDP-1
+	
+#+end_src
+
+
+** Desktop Deamons
+#+begin_src conf
+exec-once = ~/.config/hypr/scripts/xdg-portal-hyprland # Make sure the correct portal is running
+exec-once = dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP # Wayland magic (screen sharing etc.)
+exec-once = systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP # More wayland magic (screen sharing etc.)
+exec-once = /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 # used for user sudo graphical elevation
+exec-once = waybar # The top bar
+exec-once = blueman-applet # Systray app for BT
+exec-once = nm-applet --indicator # Systray app for Network/Wifi
+exec = ~/.config/hypr/scripts/bgaction # Sets the background based on theme
+exec-once = ~/.config/mako/batstatus.sh
+
+#+end_src
+
+** UI Inputs Accessories
+*** Input Setup
+#+begin_src conf
+      input {
+          kb_layout = us
+          kb_variant =
+          kb_model =
+          kb_options =
+          kb_rules =
+
+          follow_mouse = 1
+
+          touchpad {
+              natural_scroll = yes
+          }
+
+          sensitivity = 0 # -1.0 - 1.0, 0 means no modification.
+      }
+
+
+      
+  gestures {
+        # See https://wiki.hyprland.org/Configuring/Variables/ for more
+        workspace_swipe = on
+    }
+
+    # Example per-device config
+    # See https://wiki.hyprland.org/Configuring/Keywords/#executing for more
+    device:epic mouse V1 {
+        sensitivity = -0.5
+    }
+
+          
+#+end_src
+
+*** Decorations
+#+begin_src conf
+  general {
+      # See https://wiki.hyprland.org/Configuring/Variables/ for more
+
+      gaps_in = 2
+      gaps_out = 2
+    
+      border_size = 1
+      #col.active_border = rgba(33ccffee) rgba(00ff99ee) 45deg
+      col.active_border=rgb(cdd6f4)
+      col.inactive_border = rgba(595959aa)
+
+      layout = dwindle
+  }
+
+	misc {
+    disable_hyprland_logo = yes
+}
+
+decoration {
+    # See https://wiki.hyprland.org/Configuring/Variables/ for more
+
+    rounding = 5
+    blur = yes
+    blur_size = 7
+    blur_passes = 4
+    blur_new_optimizations = on
+
+    blurls = lockscreen
+
+    drop_shadow = yes
+    shadow_range = 4
+    shadow_render_power = 3
+    col.shadow = rgba(1a1a1aee)
+}
+
+animations {
+    enabled = yes
+
+    # Some default animations, see https://wiki.hyprland.org/Configuring/Animations/ for more
+    bezier = myBezier, 0.10, 0.9, 0.1, 1.05
+
+    animation = windows, 1, 10, myBezier, slide
+    animation = windowsOut, 1, 7, myBezier, slide
+    animation = border, 1, 10, default
+    animation = fade, 1, 7, default
+    animation = workspaces, 1, 6, default
+}
+
+dwindle {
+    # See https://wiki.hyprland.org/Configuring/Dwindle-Layout/ for more
+    pseudotile = yes # master switch for pseudotiling. Enabling is bound to mainMod + P in the keybinds section below
+    preserve_split = yes # you probably want this
+}
+
+
+master {
+    # See https://wiki.hyprland.org/Configuring/Master-Layout/ for more
+    new_is_master = true
+}
+
+#+end_src
+
+** Window Rules
+#+begin_src conf
+
+# Example windowrule v1
+#windowrule = float, ^(kitty)$
+windowrule = float,^(pavucontrol)$
+windowrule = float,^(blueman-manager)$
+windowrule = float,^(nm-connection-editor)$
+windowrule = float,^(chromium)$
+windowrule = float,^(thunar)$
+windowrule = float, title:^(btop)$
+windowrule = float, title:^(update-sys)$
+windowrule=  float,^(kitty)$
+
+# Example windowrule v2
+# windowrulev2 = float,class:^(kitty)$,title:^(kitty)$
+# See https://wiki.hyprland.org/Configuring/Window-Rules/ for more
+# rules below would make the specific app transparent
+windowrulev2 = opacity 0.8 0.8,size 50 50,class:^(kitty)$
+#windowrulev2 = animation popin,class:^(kitty)$,title:^(update-sys)$
+windowrulev2 = animation popin,class:^(thunar)$
+windowrulev2 = opacity 0.8 0.8,class:^(thunar)$
+windowrulev2 = opacity 0.8 0.8,class:^(VSCodium)$
+windowrulev2 = animation popin,class:^(chromium)$
+windowrulev2 = animation slide,class:^(wofi)$
+windowrulev2 = move 100%-433 53,class:^(wofi)$,title:^(clippick)$
+
+
+#+end_src
+
+** KeyBindings
+*** Applications
+#+begin_src conf
+
+
+    # See https://wiki.hyprland.org/Configuring/Keywords/ for more
+    $mainMod = SUPER
+    # Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
+    bind = $mainMod, SPACE, exec, wofi # Show the graphical app launcher
+    bind = $mainMod, S, exec, grim -g "$(slurp)" - | swappy -f - # take a screenshot
+    bind = $mainMod, L, exec, swaylock # Lock the screen
+    bind = $mainMod, M, exec, wlogout --protocol layer-shell # show the logout window
+
+
+    bind = $mainMod, Q, exec, kitty  # open the terminal   
+    bind = $mainMod, KP_Right, exec, emacsclient --create-frame --alternate-editor=""
+    bind = $mainMod, KP_Down,exec, firefox 
+    bind = $mainMod, KP_Left, exec, thunar
+          
+#+end_src
+
+*** Utils
+#+begin_src conf
+bind = $mainMod, C, killactive, # close the active window
+bind = $mainMod SHIFT, M, exit, # Exit Hyprland all together no (force quit Hyprland)
+bind = $mainMod, V, togglefloating, # Allow a window to float
+bind = $mainMod, P, pseudo, # dwindle
+bind = $mainMod, J, togglesplit, # dwindle
+bindr=SUPER,Z, exec, killall waybar || waybar #hide waybar
+bind = SUPER_ALT, F4,  exec , kitty --start-as fullscreen /home/rish/.config/hypr/scripts/shut 
+#+end_src
+
+*** Workspace and Windows
+#+begin_src conf
+# Move focus with mainMod + arrow keys
+bind = $mainMod, left, movefocus, l
+bind = $mainMod, right, movefocus, r
+bind = $mainMod, up, movefocus, u
+bind = $mainMod, down, movefocus, d
+
+# Switch workspaces with mainMod + [0-9]
+bind = $mainMod, 1, workspace, 1
+bind = $mainMod, 2, workspace, 2
+bind = $mainMod, 3, workspace, 3
+bind = $mainMod, 4, workspace, 4
+bind = $mainMod, 5, workspace, 5
+bind = $mainMod, 6, workspace, 6
+bind = $mainMod, 7, workspace, 7
+bind = $mainMod, 8, workspace, 8
+bind = $mainMod, 9, workspace, 9
+bind = $mainMod, 0, workspace, 10
+
+# Move active window to a workspace with mainMod + SHIFT + [0-9]
+bind = $mainMod SHIFT, 1, movetoworkspace, 1
+bind = $mainMod SHIFT, 2, movetoworkspace, 2
+bind = $mainMod SHIFT, 3, movetoworkspace, 3
+bind = $mainMod SHIFT, 4, movetoworkspace, 4
+bind = $mainMod SHIFT, 5, movetoworkspace, 5
+bind = $mainMod SHIFT, 6, movetoworkspace, 6
+bind = $mainMod SHIFT, 7, movetoworkspace, 7
+bind = $mainMod SHIFT, 8, movetoworkspace, 8
+bind = $mainMod SHIFT, 9, movetoworkspace, 9
+bind = $mainMod SHIFT, 0, movetoworkspace, 10
+
+# Scroll through existing workspaces with mainMod + scroll
+bind = $mainMod, mouse_down, workspace, e+1
+bind = $mainMod, mouse_up, workspace, e-1
+
+# Move/resize windows with mainMod + LMB/RMB and dragging
+bindm = $mainMod, mouse:272, movewindow
+bindm = $mainMod, mouse:273, resizewindow
+
+# Source a file (multi-file configs)
+# source = ~/.config/hypr/myColors.conf
+
+#+end_src
+
+*** Brigh. and Vol.
+#+begin_src conf		
+    binde=, XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+    binde=, XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+    binde=, XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+    bind=, XF86AudioPlay, exec, playerctl play-pause
+    bind=, XF86AudioPause, exec, playerctl play-pause
+    bind=, XF86AudioNext, exec, playerctl next
+    bind=, XF86AudioPrev, exec, playerctl previous
+
+    bind=,XF86MonBrightnessDown,exec,brightnessctl set 5%-
+    bind=,XF86MonBrightnessUp,exec,brightnessctl set +5% 
+
+
+#+end_src
+
+
+
+
+
+** Scripts  
+*** bgaction
+:PROPERTIES:
+:header-args: :tangle ~/.config/hypr/scripts/bgaction  :tangle-mode (identity #o755)
+:END:
+wallpaper scripts that runs when Hyprland starts
+#+begin_src sh
+#!/usr/bin/bash
+
+#start swwww
+swww query || swww init
+
+#figure out which waybar theme is set
+THEMEIS=$(readlink -f ~/.config/waybar/style.css | cut -d '-' -f2)
+
+#show the correct wallpapper based on the theme
+if [ $THEMEIS == "dark.css" ]; then
+    swww img ~/.config/hypr/wallpaper/walld.jpg
+else
+    swww img ~/.config/hypr/wallpaper/walll.jpg
+fi
+
+#+end_src
+*** xdg-portal-hyprland
+:PROPERTIES:
+:header-args: :tangle ~/.config/hypr/scripts/xdg-portal-hyprland  :tangle-mode (identity #o755) 
+:END:
+this loads desktop env
+#+begin_src sh
+  #!/bin/bash
+  sleep 1
+  killall xdg-desktop-portal-hyprland
+  killall xdg-desktop-portal
+  /usr/lib/xdg-desktop-portal-hyprland &
+  sleep 2
+  /usr/lib/xdg-desktop-portal &
+#+end_src
+
+#+auto_tangle:t
+*** shut
+:PROPERTIES:
+:header-args: :tangle ~/.config/hypr/scripts/shut  :tangle-mode (identity #o755)
+:END:
+#+begin_src sh
+  #!/bin/bash
+
+      shut() {
+          #countdown
+          s=3 
+          neofetch
+          echo "STARTING SHUTDWON SEQUENCE IN $s SECONDS"
+          for (( i=1 ; i<=$s ; i++ )); 
+           do
+               sleep 1
+               echo "$i"
+            done
+          shutdown now
+
+      }
+
+    shut
+#+end_src
+
+
+* Emacs
+:PROPERTIES:
+:header-args: :tangle ~/.config/.emacs.d/.emacs
+ :END:
+** Package System Setup
+
+#+begin_src emacs-lisp 
+
+  ;; Initialize package sources
+(require 'package)
+
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")))
+
+(package-initialize)
+(unless package-archive-contents
+  (package-refresh-contents))
+
+  ;; Initialize use-package on non-Linux platforms
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+
+(require 'use-package)
+(setq use-package-always-ensure t)
+#+end_src
+
+
+** Basic UI Configuration
+
+
+#+begin_src emacs-lisp
+(setq inhibit-startup-message t)
+
+(scroll-bar-mode -1)        ; Disable visible scrollbar
+(tool-bar-mode -1)          ; Disable the toolbar
+(tooltip-mode -1)           ; Disable tooltips
+(set-fringe-mode 10)        ; Give some breathing room
+
+(menu-bar-mode -1)            ; Disable the menu bar
+
+;; Set up the visible bell
+;;(setq visible-bell t)
+
+(column-number-mode)
+(global-display-line-numbers-mode t)
+
+;; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+                term-mode-hook
+                shell-mode-hook
+                eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+#+end_src
+
+
+** Font Configuration
+skipping this maybe later configure
+#+begin_src emacs-lisp
+;(set-face-attribute 'default nil :font "Fira Code Retina" :height efs/default-font-size)
+
+;; Set the fixed pitch face
+;(set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height efs/default-font-size)
+
+;; Set the variable pitch face
+;(set-face-attribute 'variable-pitch nil :font "Cantarell" :height efs/default-font-size :weight 'regular)
+#+end_src
+
+
+** Keybinding Configuration
+#+begin_src emacs-lisp
+;; Make ESC quit prompts
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+(use-package general
+  :config
+  (general-create-definer rune/leader-keys
+    :keymaps '(normal insert visual emacs)
+    :prefix "SPC"
+    :global-prefix "C-SPC")
+
+  (rune/leader-keys
+    "t"  '(:ignore t :which-key "toggles")
+    "tt" '(counsel-load-theme :which-key "choose theme")))
+
+(use-package evil
+  :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  (setq evil-want-C-u-scroll t)
+  (setq evil-want-C-i-jump nil)
+  :config
+  (evil-mode 1)
+  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+
+  ;; Use visual line motions even outside of visual-line-mode buffers
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+  (evil-set-initial-state 'messages-buffer-mode 'normal)
+  (evil-set-initial-state 'dashboard-mode 'normal))
+
+(use-package evil-collection
+  :after evil
+  :config
+  (evil-collection-init))
+#+end_src
+
+** UI Configuration
+*** Color Theme
+
+#+begin_src emacs-lisp
+
+(use-package doom-themes
+  :init (load-theme 'doom-dracula t))
+
+#+end_src
+
+
+*** Better Modeline
+#+begin_src emacs-lisp
+(use-package all-the-icons)
+
+(use-package doom-modeline
+  :init (doom-modeline-mode 1)
+  :custom ((doom-modeline-height 15)))
+#+end_src
+
+
+*** Which Key
+**** info
+which-key is a useful UI panel that appears when you start pressing
+any key binding in Emacs to offer you all possible completions for the
+prefix. For example, if you press C-c (hold control and press the
+letter c), a panel will appear at the bottom of the frame displaying
+all of the bindings under that prefix and which command they run. This
+is very useful for learning the possible key bindings in the mode of
+your current buffer.
+**** code
+#+begin_src emacs-lisp
+
+(use-package which-key
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 1))
+
+#+end_src
+
+
+*** Ivy and Counsel
+**** info
+Ivy is an excellent completion framework for Emacs. It provides a
+minimal yet powerful selection menu that appears when you open files,
+switch buffers, and for many other tasks in Emacs. Counsel is a
+customized set of commands to replace `find-file` with
+`counsel-find-file`, etc which provide useful commands for each of the
+default completion commands.
+
+ivy-rich adds extra columns to a few of the Counsel commands to
+provide more information about each item.
+**** code
+#+begin_src emacs-lisp
+
+(use-package ivy
+  :diminish
+  :bind (("C-s" . swiper)
+         :map ivy-minibuffer-map
+         ("TAB" . ivy-alt-done)
+         ("C-l" . ivy-alt-done)
+         ("C-j" . ivy-next-line)
+         ("C-k" . ivy-previous-line)
+         :map ivy-switch-buffer-map
+         ("C-k" . ivy-previous-line)
+         ("C-l" . ivy-done)
+         ("C-d" . ivy-switch-buffer-kill)
+         :map ivy-reverse-i-search-map
+         ("C-k" . ivy-previous-line)
+         ("C-d" . ivy-reverse-i-search-kill))
+  :config
+  (ivy-mode 1))
+
+(use-package ivy-rich
+  :init
+  (ivy-rich-mode 1))
+
+(use-package counsel
+  :bind (("C-M-j" . 'counsel-switch-buffer)
+         :map minibuffer-local-map
+         ("C-r" . 'counsel-minibuffer-history))
+  :config
+  (counsel-mode 1))
+
+#+end_src
+
+
+
+*** Helpful Help Commands
+**** info
+Helpful adds a lot of very helpful (get it?) information to Emacs’
+describe- command buffers. For example, if you use describe-function,
+you will not only get the documentation about the function, you will
+also see the source code of the function and where it gets used in
+other places in the Emacs configuration. It is very useful for
+figuring out how things work in Emacs.
+**** code
+#+begin_src emacs-lisp
+(use-package helpful
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
+
+#+end_src
+
+
+*** Text Scaling/Hydra
+**** info
+This is an example of using Hydra to design a transient key binding
+for quickly adjusting the scale of the text on screen. We define a
+hydra that is bound to C-s t s and, once activated, j and k increase
+and decrease the text scale. You can press any other key (or f
+specifically) to exit the transient key map.
+**** code
+#+begin_src emacs-lisp
+(use-package hydra)
+(defhydra hydra-text-scale (:timeout 4)
+  "scale text"
+  ("j" text-scale-increase "in")
+  ("k" text-scale-decrease "out")
+  ("f" nil "finished" :exit t))
+
+(rune/leader-keys
+  "ts" '(hydra-text-scale/body :which-key "scale text"))
+#+end_src
+
+
+
+
+** Org Mode
+*** Better Font Faces
+**** info
+The efs/org-font-setup function configures various text faces to tweak
+the sizes of headings and use variable width fonts in most cases so
+that it looks more like we’re editing a document in org-mode. We
+switch back to fixed width (monospace) fonts for code blocks and
+tables so that they display correctly.
+**** code
+#+begin_src emacs-lisp
+
+(defun efs/org-font-setup ()
+  ;; Replace list hyphen with dot
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+  ;; Set faces for heading levels
+  (dolist (face '((org-level-1 . 1.2)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :font "JetBrainsMono Nerd Font Propo " :weight 'regular :height (cdr face)))
+
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+#+end_src
+*** Basic Config
+**** info
+This section contains the basic configuration for org-mode plus the
+configuration for Org agendas and capture templates. There’s a lot to
+unpack in here so I’d recommend watching the videos for Part 5 and
+Part 6 for a full explanation.
+**** code
+#+begin_src emacs-lisp
+
+(defun efs/org-mode-setup ()
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (visual-line-mode 1))
+
+(use-package org
+  :hook (org-mode . efs/org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾")
+
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+
+  (setq org-agenda-files
+        '("~/Projects/Code/emacs-from-scratch/OrgFiles/Tasks.org"
+          "~/Projects/Code/emacs-from-scratch/OrgFiles/Habits.org"
+          "~/Projects/Code/emacs-from-scratch/OrgFiles/Birthdays.org"))
+
+  (require 'org-habit)
+  (add-to-list 'org-modules 'org-habit)
+  (setq org-habit-graph-column 60)
+
+  (setq org-todo-keywords
+    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+      (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+
+  (setq org-refile-targets
+    '(("Archive.org" :maxlevel . 1)
+      ("Tasks.org" :maxlevel . 1)))
+
+  ;; Save Org buffers after refiling!
+  (advice-add 'org-refile :after 'org-save-all-org-buffers)
+
+  (setq org-tag-alist
+    '((:startgroup)
+       ; Put mutually exclusive tags here
+       (:endgroup)
+       ("@errand" . ?E)
+       ("@home" . ?H)
+       ("@work" . ?W)
+       ("agenda" . ?a)
+       ("planning" . ?p)
+       ("publish" . ?P)
+       ("batch" . ?b)
+       ("note" . ?n)
+       ("idea" . ?i)))
+
+  ;; Configure custom agenda views
+  (setq org-agenda-custom-commands
+   '(("d" "Dashboard"
+     ((agenda "" ((org-deadline-warning-days 7)))
+      (todo "NEXT"
+        ((org-agenda-overriding-header "Next Tasks")))
+      (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+
+    ("n" "Next Tasks"
+     ((todo "NEXT"
+        ((org-agenda-overriding-header "Next Tasks")))))
+
+    ("W" "Work Tasks" tags-todo "+work-email")
+
+    ;; Low-effort next actions
+    ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+     ((org-agenda-overriding-header "Low Effort Tasks")
+      (org-agenda-max-todos 20)
+      (org-agenda-files org-agenda-files)))
+
+    ("w" "Workflow Status"
+     ((todo "WAIT"
+            ((org-agenda-overriding-header "Waiting on External")
+             (org-agenda-files org-agenda-files)))
+      (todo "REVIEW"
+            ((org-agenda-overriding-header "In Review")
+             (org-agenda-files org-agenda-files)))
+      (todo "PLAN"
+            ((org-agenda-overriding-header "In Planning")
+             (org-agenda-todo-list-sublevels nil)
+             (org-agenda-files org-agenda-files)))
+      (todo "BACKLOG"
+            ((org-agenda-overriding-header "Project Backlog")
+             (org-agenda-todo-list-sublevels nil)
+             (org-agenda-files org-agenda-files)))
+      (todo "READY"
+            ((org-agenda-overriding-header "Ready for Work")
+             (org-agenda-files org-agenda-files)))
+      (todo "ACTIVE"
+            ((org-agenda-overriding-header "Active Projects")
+             (org-agenda-files org-agenda-files)))
+      (todo "COMPLETED"
+            ((org-agenda-overriding-header "Completed Projects")
+             (org-agenda-files org-agenda-files)))
+      (todo "CANC"
+            ((org-agenda-overriding-header "Cancelled Projects")
+             (org-agenda-files org-agenda-files)))))))
+
+  (setq org-capture-templates
+    `(("t" "Tasks / Projects")
+      ("tt" "Task" entry (file+olp "~/Projects/Code/emacs-from-scratch/OrgFiles/Tasks.org" "Inbox")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+
+      ("j" "Journal Entries")
+      ("jj" "Journal" entry
+           (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+           "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+           ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
+           :clock-in :clock-resume
+           :empty-lines 1)
+      ("jm" "Meeting" entry
+           (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+           "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+           :clock-in :clock-resume
+           :empty-lines 1)
+
+      ("w" "Workflows")
+      ("we" "Checking Email" entry (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+
+      ("m" "Metrics Capture")
+      ("mw" "Weight" table-line (file+headline "~/Projects/Code/emacs-from-scratch/OrgFiles/Metrics.org" "Weight")
+       "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
+
+  (define-key global-map (kbd "C-c j")
+    (lambda () (interactive) (org-capture nil "jj")))
+
+  (efs/org-font-setup))
+
+#+end_src
+*** Nicer Heading Bullets
+**** info
+org-bullets replaces the heading stars in org-mode buffers with nicer
+looking characters that you can control. Another option for this is
+org-superstar-mode which we may cover in a later video.
+**** code
+#+begin_src emacs-lisp
+
+(use-package org-bullets
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+#+end_src
+*** Center Org Buffers
+**** info
+We use visual-fill-column to center org-mode buffers for a more
+pleasing writing experience as it centers the contents of the buffer
+horizontally to seem more like you are editing a document. This is
+really a matter of personal preference so you can remove the block
+below if you don’t like the behavior.
+**** code
+#+begin_src emacs-lisp
+(defun efs/org-mode-visual-fill ()
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :hook (org-mode . efs/org-mode-visual-fill))
+#+end_src
+*** Configure Babel Languages / skip this for now
+**** info
+To execute or export code in org-mode code blocks, you’ll need to set
+up org-babel-load-languages for each language you’d like to use. This
+page documents all of the languages that you can use with org-babel.
+**** code
+#+begin_src emacs-lisp
+;(org-babel-do-load-languages
+;  'org-babel-load-languages
+;  '((emacs-lisp . t)
+;    (python . t)))
+
+;(push '("conf-unix" . conf-unix) org-src-lang-modes)
+#+end_src
+
+
+*** Auto-tangle Configuration Files [NO NEED AS USING auto-tangle]
+**** info
+This snippet adds a hook to org-mode buffers so that
+efs/org-babel-tangle-config gets executed each time such a buffer gets
+saved. This function checks to see if the file being saved is the
+Emacs.org file you’re looking at right now, and if so, automatically
+exports the configuration here to the associated output files.
+**** code
+#+begin_src emacs-lisp
+
+;; Automatically tangle our Emacs.org config file when we save it
+;(defun efs/org-babel-tangle-config ()
+;  (when (string-equal (buffer-file-name)
+;                      (expand-file-name "~/Projects/Code/emacs-from-scratch/Emacs.org"))
+;    ;; Dynamic scoping to the rescue
+;    (let ((org-confirm-babel-evaluate nil))
+;      (org-babel-tangle))))
+
+;(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
+#+end_src
+
+*** auto-tangle
+**** info
+This package (i.e org-auto-tangle) is a very simple emacs package that allows you to automatically tangle org files on save. This is done by adding the option #+auto_tangle: t in your org file.
+The tangling process happens asynchronously so it will not block your emacs session.
+***** src
+https://github.com/yilkalargaw/org-auto-tangle
+
+**** code
+#+begin_src emacs-lisp
+(use-package org-auto-tangle
+  :defer t
+  :hook (org-mode . org-auto-tangle-mode))
+#+end_src
+
+
+*** org-code-blocks
+**** custom templates
+these templates are custom code blocks
+#+begin_src emacs-lisp
+
+  (require 'org-tempo)
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp") )
+  (add-to-list 'org-structure-template-alist '("conf" . "src conf") )
+  (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
+  (add-to-list 'org-structure-template-alist '("css" . "src css")) 
+
+#+end_src
+**** code-block-comment
+***** src
+ https://emacs.stackexchange.com/questions/19736/language-specific-comments-in-org-mode-source-code-blocks
+this block automatically detects language and applies respected comment
+#+begin_src emacs-lisp
+;; allow comment region in the code edit buffer (according to language)
+(defun my-org-comment-dwim (&optional arg)
+  (interactive "P")
+  (or (org-babel-do-key-sequence-in-edit-buffer (kbd "M-;"))
+      (comment-dwim arg)))
+
+;; make `C-c C-v C-x M-;' more convenient
+(define-key org-mode-map
+  (kbd "M-;") 'my-org-comment-dwim)
+
+#+end_src
+
+
+** Development
+
+*** Projectile
+**** info
+Projectile is a project management library for Emacs which makes it a
+lot easier to navigate around code projects for various
+languages. Many packages integrate with Projectile so it’s a good idea
+to have it installed even if you don’t use its commands directly.
+**** code
+#+begin_src emacs-lisp
+  ;; (use-package projectile
+  ;;   :diminish projectile-mode
+  ;;   :config (projectile-mode)
+  ;;   :custom ((projectile-completion-system 'ivy))
+  ;;   :bind-keymap
+  ;;   ("C-c p" . projectile-command-map)
+  ;;   :init
+  ;;   ; NOTE: Set this to the folder where you keep your Git repos!
+  ;;   (when (file-directory-p "~/Projects/Code")
+  ;;     (setq projectile-project-search-path '("~/Projects/Code")))
+  ;;   (setq projectile-switch-project-action #'projectile-dired))
+
+  ;; (use-package counsel-projectile
+  ;;   :config (counsel-projectile-mode))
+
+#+end_src
+*** Magit
+**** info
+Magit is the best Git interface I’ve ever used. Common Git operations
+are easy to execute quickly using Magit’s command panel system.
+**** code
+#+begin_src emacs-lisp
+;  (use-package magit
+;    :custom
+;    (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+;   (use-package evil-magit
+;     :after magit)
+
+  ;; ;; NOTE: Make sure to configure a GitHub token before using this package!
+  ;; ;; - https://magit.vc/manual/forge/Token-Creation.html#Token-Creation
+  ;; ;; - https://magit.vc/manual/ghub/Getting-Started.html#Getting-Started
+  ;; (use-package forge)
+#+end_src
+
+
+
+** Rainbow Delimiters
+*** info
+rainbow-delimiters is useful in programming modes because it colorizes
+nested parentheses and brackets according to their nesting depth. This
+makes it a lot easier to visually match parentheses in Emacs Lisp code
+without having to count them yourself.
+*** code
+#+begin_src emacs-lisp
+
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+#+end_src
+
+
+** rish utilities
+*** desktop-save
+**** info
+save changes of previous state
+**** code
+#+begin_src emacs-lisp
+(desktop-save-mode 1)
+#+end_src
+*** print all fonts
+#+begin_src emacs-lisp
+;;pritn font
+;; (let ((font-family-list (sort (font-family-list) 'string<)))
+;;   (dolist (font-family font-family-list)
+;;     (message font-family)))
+
+
+#+end_src
+*** changing path of emacs configuration file
+before doign this paste .emacs.d in .config and .emacs in .emacs.d
+
+  ln -s ~/.config/.emacs.d ~/.emacs.d
+  ln -s ~/.config/.emacs.d/.emacs ~/.emacs
+*** save backup
+this code block saves backup of config.org  file whenever config.org is saved
+#+begin_src emacs-lisp
+;; Define a function to run the Bash command
+(defun my/run-bash-command-on-save ()
+  (when (string= (buffer-name) "config.org") ; Replace with the actual buffer name
+    (shell-command "cp ~/config.org ~/desktop/esy-archy/config-b.org")) ; Replace with the actual Bash command
+  )
+
+;; Add the function to the after-save-hook
+(add-hook 'after-save-hook 'my/run-bash-command-on-save)
+#+end_src
+
+
+* Apps 
+** Mako
+*** conf
+:PROPERTIES:
+:header-args:  :tangle ~/.config/mako/config  
+:END:
+
+#+begin_src conf
+          
+  sort=-time
+  layer=overlay
+  background-color=#383a54
+  #width=300
+  #height=110
+  border-size=1
+  border-color=#88c0d0
+  #border-radius=15
+  icons=0
+  #max-icon-size=64
+  default-timeout=3000
+  ignore-timeout=1
+  font=monospace 12
+
+  [urgency=low]
+  #border-color=#0a7813
+
+  [urgency=normal]
+  border-color=#f20212
+  default-timeout=10000
+
+  [urgency=high]
+  #border-color=#ed073d
+  default-timeout=0
+
+  [category=mpd]
+  default-timeout=2000
+  group-by=category
+
+
+#+end_src
+*** batstatus
+:PROPERTIES:
+:header-args: :tangle ~/.config/mako/batstatus.sh  :tangle-mode (identity #o755)  
+:END:
+#+begin_src sh
+   #!/bin/bash
+
+   while true
+         do
+   BATTERY_LEVEL="$(acpi | grep -oP '(?<=, )\d+(?=%)')"
+
+   DISCHARGING="$(acpi | grep 'Discharging')"
+
+  if [ ! -z "${DISCHARGING}" ] && [ "${BATTERY_LEVEL}" -le 40 ]; then
+       notify-send --icon=battery-low "Battery Discharging ${BATTERY_LEVEL}%"
+       notify-send "Starting Shutdown Sequence"
+
+      kitty  ~/.config/mako/shut.sh
+
+   fi
+
+
+   if [ ! -z "${DISCHARGING}" ]; then
+       notify-send --icon=battery-low "Battery Discharging ${BATTERY_LEVEL}%"
+       sleep 600
+
+       else
+           notify-send --icon=battery-low "Battery Charging ${BATTERY_LEVEL}%"
+           sleep 1800
+
+   fi
+
+
+        done
+
+#+end_src
+
+
+** Swaylock
+:PROPERTIES:
+:header-args: :tangle ~/.config/swaylock/config  
+:END:
+#+begin_src conf
+  daemonize
+  show-failed-attempts
+  clock
+  screenshot
+  effect-blur=9x5
+  effect-vignette=0.5:0.5
+  color=1f1d2e80
+  font="Inter"
+  indicator
+  indicator-radius=200
+  indicator-thickness=20
+  line-color=1f1d2e
+  ring-color=191724
+  inside-color=1f1d2e
+  key-hl-color=eb6f92
+  separator-color=00000000
+  text-color=e0def4
+  text-caps-lock-color=""
+  line-ver-color=eb6f92
+  ring-ver-color=eb6f92
+  inside-ver-color=1f1d2e
+  text-ver-color=e0def4
+  ring-wrong-color=31748f
+  text-wrong-color=31748f
+  inside-wrong-color=1f1d2e
+  inside-clear-color=1f1d2e
+  text-clear-color=e0def4
+  ring-clear-color=9ccfd8
+  line-clear-color=1f1d2e
+  line-wrong-color=1f1d2e
+  bs-hl-color=31748f
+  grace=2
+  grace-no-mouse
+  grace-no-touch
+  datestr=%a, %B %e
+  timestr=%I:%M %p
+  fade-in=0.2
+  ignore-empty-password
+
+#+end_src
+
+
+** Wofi
+*** conf
+:PROPERTIES:
+:header-args: :tangle ~/.config/wofi/config
+:END:
+#+begin_src conf
+width=600
+
+height=350
+location=center
+show=drun
+prompt=Search...
+filter_rate=100
+allow_markup=true
+no_actions=true
+halign=fill
+orientation=vertical
+content_halign=fill
+insensitive=true
+allow_images=true
+image_size=40
+gtk_dark=true
+
+#+end_src
+
+*** style
+:PROPERTIES:
+:header-args: :tangle ~/.config/wofi/style/style-dark.css :tangle ~/.config/wofi/style/style.css
+:END:
+#+begin_src css
+/*HYPRV2 CONFIG */
+
+window {
+    margin: 0px;
+    border: 5px solid #1e1e2e;
+    background-color: #cdd6f4;
+    border-radius: 15px;
+}
+
+#input {
+    padding: 4px;
+    margin: 4px;
+    padding-left: 20px;
+    border: none;
+    color: #cdd6f4;
+    font-weight: bold;
+    background-color: #1e1e2e;
+   	outline: none;
+    border-radius: 15px;
+    margin: 10px;
+    margin-bottom: 2px;
+}
+#input:focus {
+    border: 0px solid #1e1e2e;
+    margin-bottom: 0px;
+}
+
+#inner-box {
+    margin: 4px;
+    border: 10px solid #1e1e2e;
+    color: #cdd6f4;
+    font-weight: bold;
+    background-color: #1e1e2e;
+    border-radius: 15px;
+}
+
+#outer-box {
+    margin: 0px;
+    border: none;
+    border-radius: 15px;
+    background-color: #1e1e2e;
+}
+
+#scroll {
+    margin-top: 5px;
+    border: none;
+    border-radius: 15px;
+    margin-bottom: 5px;
+    /* background: rgb(255,255,255); */
+}
+
+#img:selected {
+    background-color: #89b4fa;
+    border-radius: 15px;
+}
+
+#text:selected {
+    color: #cdd6f4;
+    margin: 0px 0px;
+    border: none;
+    border-radius: 15px;
+    background-color: #89b4fa;
+}
+
+#entry {
+    margin: 0px 0px;
+    border: none;
+    border-radius: 15px;
+    background-color: transparent;
+}
+
+#entry:selected {
+    margin: 0px 0px;
+    border: none;
+    border-radius: 15px;
+    background-color: #89b4fa;
+}
+
+#+end_src
+
+ 
+** Kitty
+*** conf
+:PROPERTIES:
+:header-args: :tangle ~/.config/kitty/kitty.conf
+:END:
+
+#+begin_src conf
+  include ./mocha.conf
+	
+  font_family      jetbrains mono nerd font
+  font_size        12
+  bold_font        auto
+  italic_font      auto
+  bold_italic_font auto
+  mouse_hide_wait  2.0
+  cursor_shape     block
+  url_color        #0087bd
+  url_style        dotted
+  #Close the terminal without confirmation
+  confirm_os_window_close 0
+  background_opacity 0.75
+
+#+end_src
+
+*** mocha
+:PROPERTIES:
+:header-args:  :tangle ~/.config/kitty/mocha.conf
+:END:
+#+begin_src conf
+  # vim:ft=kitty
+
+  ## name:     Catppuccin-Mocha
+  ## author:   Pocco81 (https://github.com/Pocco81)
+  ## license:  MIT
+  ## upstream: https://github.com/catppuccin/kitty/blob/main/mocha.conf
+  ## blurb:    Soothing pastel theme for the high-spirited!
+
+
+
+  # The basic colors
+  foreground              #CDD6F4
+  background              #0f160f
+  selection_foreground    #1E1E2E
+  selection_background    #F5E0DC
+
+  # Cursor colors
+  cursor                  #F5E0DC
+  cursor_text_color       #1E1E2E
+
+  # URL underline color when hovering with mouse
+  url_color               #F5E0DC
+
+  # Kitty window border colors
+  active_border_color     #B4BEFE
+  inactive_border_color   #6C7086
+  bell_border_color       #F9E2AF
+
+  # OS Window titlebar colors
+  wayland_titlebar_color system
+  macos_titlebar_color system
+
+  # Tab bar colors
+  active_tab_foreground   #11111B
+  active_tab_background   #CBA6F7
+  inactive_tab_foreground #CDD6F4
+  inactive_tab_background #181825
+  tab_bar_background      #11111B
+
+  # Colors for marks (marked text in the terminal)
+  mark1_foreground #1E1E2E
+  mark1_background #B4BEFE
+  mark2_foreground #1E1E2E
+  mark2_background #CBA6F7
+  mark3_foreground #1E1E2E
+  mark3_background #74C7EC
+
+  # The 16 terminal colors
+
+  # black
+  color0 #45475A
+  color8 #585B70
+
+  # red
+  color1 #F38BA8
+  color9 #F38BA8
+
+  # green
+  color2  #A6E3A1
+  color10 #A6E3A1
+
+  # yellow
+  color3  #F9E2AF
+  color11 #F9E2AF
+
+  # blue
+  color4  #89B4FA
+  color12 #89B4FA
+
+  # magenta
+  color5  #F5C2E7
+  color13 #F5C2E7
+
+  # cyan
+  color6  #94E2D5
+  color14 #94E2D5
+
+  # white
+  color7  #BAC2DE
+  color15 #A6ADC8
+
+	
+#+end_src
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+** Neofetch
+:PROPERTIES:
+:header-args: :tangle ~/.config/neofetch/config.conf
+:END:
+
+#+begin_src conf
+# See this wiki page for more info:
+# https://github.com/dylanaraps/neofetch/wiki/Customizing-Info
+print_info() {
+    info title
+    info underline
+
+    info "OS" distro
+    info "Host" model
+    info "Kernel" kernel
+    info "Uptime" uptime
+    info "Packages" packages
+    info "Shell" shell
+    info "Resolution" resolution
+    info "DE" de
+    info "WM" wm
+    info "WM Theme" wm_theme
+    info "Theme" theme
+    info "Icons" icons
+    info "Terminal" term
+    info "Terminal Font" term_font
+    info "CPU" cpu
+    info "GPU" gpu
+    info "Memory" memory
+
+    # info "GPU Driver" gpu_driver  # Linux/macOS only
+    # info "CPU Usage" cpu_usage
+    # info "Disk" disk
+    # info "Battery" battery
+    # info "Font" font
+    # info "Song" song
+    # [[ "$player" ]] && prin "Music Player" "$player"
+    # info "Local IP" local_ip
+    # info "Public IP" public_ip
+    # info "Users" users
+    # info "Locale" locale  # This only works on glibc systems.
+
+    info cols
+}
+
+# Title
+
+
+# Hide/Show Fully qualified domain name.
+#
+# Default:  'off'
+# Values:   'on', 'off'
+# Flag:     --title_fqdn
+title_fqdn="off"
+
+
+# Kernel
+
+
+# Shorten the output of the kernel function.
+#
+# Default:  'on'
+# Values:   'on', 'off'
+# Flag:     --kernel_shorthand
+# Supports: Everything except *BSDs (except PacBSD and PC-BSD)
+#
+# Example:
+# on:  '4.8.9-1-ARCH'
+# off: 'Linux 4.8.9-1-ARCH'
+kernel_shorthand="on"
+
+
+# Distro
+
+
+# Shorten the output of the distro function
+#
+# Default:  'off'
+# Values:   'on', 'tiny', 'off'
+# Flag:     --distro_shorthand
+# Supports: Everything except Windows and Haiku
+distro_shorthand="off"
+
+# Show/Hide OS Architecture.
+# Show 'x86_64', 'x86' and etc in 'Distro:' output.
+#
+# Default: 'on'
+# Values:  'on', 'off'
+# Flag:    --os_arch
+#
+# Example:
+# on:  'Arch Linux x86_64'
+# off: 'Arch Linux'
+os_arch="on"
+
+
+# Uptime
+
+
+# Shorten the output of the uptime function
+#
+# Default: 'on'
+# Values:  'on', 'tiny', 'off'
+# Flag:    --uptime_shorthand
+#
+# Example:
+# on:   '2 days, 10 hours, 3 mins'
+# tiny: '2d 10h 3m'
+# off:  '2 days, 10 hours, 3 minutes'
+uptime_shorthand="on"
+
+
+# Memory
+
+
+# Show memory pecentage in output.
+#
+# Default: 'off'
+# Values:  'on', 'off'
+# Flag:    --memory_percent
+#
+# Example:
+# on:   '1801MiB / 7881MiB (22%)'
+# off:  '1801MiB / 7881MiB'
+memory_percent="off"
+
+# Change memory output unit.
+#
+# Default: 'mib'
+# Values:  'kib', 'mib', 'gib'
+# Flag:    --memory_unit
+#
+# Example:
+# kib  '1020928KiB / 7117824KiB'
+# mib  '1042MiB / 6951MiB'
+# gib: ' 0.98GiB / 6.79GiB'
+memory_unit="mib"
+
+
+# Packages
+
+
+# Show/Hide Package Manager names.
+#
+# Default: 'tiny'
+# Values:  'on', 'tiny' 'off'
+# Flag:    --package_managers
+#
+# Example:
+# on:   '998 (pacman), 8 (flatpak), 4 (snap)'
+# tiny: '908 (pacman, flatpak, snap)'
+# off:  '908'
+package_managers="on"
+
+
+# Shell
+
+
+# Show the path to $SHELL
+#
+# Default: 'off'
+# Values:  'on', 'off'
+# Flag:    --shell_path
+#
+# Example:
+# on:  '/bin/bash'
+# off: 'bash'
+shell_path="off"
+
+# Show $SHELL version
+#
+# Default: 'on'
+# Values:  'on', 'off'
+# Flag:    --shell_version
+#
+# Example:
+# on:  'bash 4.4.5'
+# off: 'bash'
+shell_version="on"
+
+
+# CPU
+
+
+# CPU speed type
+#
+# Default: 'bios_limit'
+# Values: 'scaling_cur_freq', 'scaling_min_freq', 'scaling_max_freq', 'bios_limit'.
+# Flag:    --speed_type
+# Supports: Linux with 'cpufreq'
+# NOTE: Any file in '/sys/devices/system/cpu/cpu0/cpufreq' can be used as a value.
+speed_type="bios_limit"
+
+# CPU speed shorthand
+#
+# Default: 'off'
+# Values: 'on', 'off'.
+# Flag:    --speed_shorthand
+# NOTE: This flag is not supported in systems with CPU speed less than 1 GHz
+#
+# Example:
+# on:    'i7-6500U (4) @ 3.1GHz'
+# off:   'i7-6500U (4) @ 3.100GHz'
+speed_shorthand="off"
+
+# Enable/Disable CPU brand in output.
+#
+# Default: 'on'
+# Values:  'on', 'off'
+# Flag:    --cpu_brand
+#
+# Example:
+# on:   'Intel i7-6500U'
+# off:  'i7-6500U (4)'
+cpu_brand="on"
+
+# CPU Speed
+# Hide/Show CPU speed.
+#
+# Default: 'on'
+# Values:  'on', 'off'
+# Flag:    --cpu_speed
+#
+# Example:
+# on:  'Intel i7-6500U (4) @ 3.1GHz'
+# off: 'Intel i7-6500U (4)'
+cpu_speed="on"
+
+# CPU Cores
+# Display CPU cores in output
+#
+# Default: 'logical'
+# Values:  'logical', 'physical', 'off'
+# Flag:    --cpu_cores
+# Support: 'physical' doesn't work on BSD.
+#
+# Example:
+# logical:  'Intel i7-6500U (4) @ 3.1GHz' (All virtual cores)
+# physical: 'Intel i7-6500U (2) @ 3.1GHz' (All physical cores)
+# off:      'Intel i7-6500U @ 3.1GHz'
+cpu_cores="logical"
+
+# CPU Temperature
+# Hide/Show CPU temperature.
+# Note the temperature is added to the regular CPU function.
+#
+# Default: 'off'
+# Values:  'C', 'F', 'off'
+# Flag:    --cpu_temp
+# Supports: Linux, BSD
+# NOTE: For FreeBSD and NetBSD-based systems, you'll need to enable
+#       coretemp kernel module. This only supports newer Intel processors.
+#
+# Example:
+# C:   'Intel i7-6500U (4) @ 3.1GHz [27.2°C]'
+# F:   'Intel i7-6500U (4) @ 3.1GHz [82.0°F]'
+# off: 'Intel i7-6500U (4) @ 3.1GHz'
+cpu_temp="off"
+
+
+# GPU
+
+
+# Enable/Disable GPU Brand
+#
+# Default: 'on'
+# Values:  'on', 'off'
+# Flag:    --gpu_brand
+#
+# Example:
+# on:  'AMD HD 7950'
+# off: 'HD 7950'
+gpu_brand="on"
+
+# Which GPU to display
+#
+# Default: 'all'
+# Values:  'all', 'dedicated', 'integrated'
+# Flag:    --gpu_type
+# Supports: Linux
+#
+# Example:
+# all:
+#   GPU1: AMD HD 7950
+#   GPU2: Intel Integrated Graphics
+#
+# dedicated:
+#   GPU1: AMD HD 7950
+#
+# integrated:
+#   GPU1: Intel Integrated Graphics
+gpu_type="all"
+
+
+# Resolution
+
+
+# Display refresh rate next to each monitor
+# Default: 'off'
+# Values:  'on', 'off'
+# Flag:    --refresh_rate
+# Supports: Doesn't work on Windows.
+#
+# Example:
+# on:  '1920x1080 @ 60Hz'
+# off: '1920x1080'
+refresh_rate="off"
+
+
+# Gtk Theme / Icons / Font
+
+
+# Shorten output of GTK Theme / Icons / Font
+#
+# Default: 'off'
+# Values:  'on', 'off'
+# Flag:    --gtk_shorthand
+#
+# Example:
+# on:  'Numix, Adwaita'
+# off: 'Numix [GTK2], Adwaita [GTK3]'
+gtk_shorthand="off"
+
+
+# Enable/Disable gtk2 Theme / Icons / Font
+#
+# Default: 'on'
+# Values:  'on', 'off'
+# Flag:    --gtk2
+#
+# Example:
+# on:  'Numix [GTK2], Adwaita [GTK3]'
+# off: 'Adwaita [GTK3]'
+gtk2="on"
+
+# Enable/Disable gtk3 Theme / Icons / Font
+#
+# Default: 'on'
+# Values:  'on', 'off'
+# Flag:    --gtk3
+#
+# Example:
+# on:  'Numix [GTK2], Adwaita [GTK3]'
+# off: 'Numix [GTK2]'
+gtk3="on"
+
+
+# IP Address
+
+
+# Website to ping for the public IP
+#
+# Default: 'http://ident.me'
+# Values:  'url'
+# Flag:    --ip_host
+public_ip_host="http://ident.me"
+
+# Public IP timeout.
+#
+# Default: '2'
+# Values:  'int'
+# Flag:    --ip_timeout
+public_ip_timeout=2
+
+
+# Desktop Environment
+
+
+# Show Desktop Environment version
+#
+# Default: 'on'
+# Values:  'on', 'off'
+# Flag:    --de_version
+de_version="on"
+
+
+# Disk
+
+
+# Which disks to display.
+# The values can be any /dev/sdXX, mount point or directory.
+# NOTE: By default we only show the disk info for '/'.
+#
+# Default: '/'
+# Values:  '/', '/dev/sdXX', '/path/to/drive'.
+# Flag:    --disk_show
+#
+# Example:
+# disk_show=('/' '/dev/sdb1'):
+#      'Disk (/): 74G / 118G (66%)'
+#      'Disk (/mnt/Videos): 823G / 893G (93%)'
+#
+# disk_show=('/'):
+#      'Disk (/): 74G / 118G (66%)'
+#
+disk_show=('/')
+
+# Disk subtitle.
+# What to append to the Disk subtitle.
+#
+# Default: 'mount'
+# Values:  'mount', 'name', 'dir', 'none'
+# Flag:    --disk_subtitle
+#
+# Example:
+# name:   'Disk (/dev/sda1): 74G / 118G (66%)'
+#         'Disk (/dev/sdb2): 74G / 118G (66%)'
+#
+# mount:  'Disk (/): 74G / 118G (66%)'
+#         'Disk (/mnt/Local Disk): 74G / 118G (66%)'
+#         'Disk (/mnt/Videos): 74G / 118G (66%)'
+#
+# dir:    'Disk (/): 74G / 118G (66%)'
+#         'Disk (Local Disk): 74G / 118G (66%)'
+#         'Disk (Videos): 74G / 118G (66%)'
+#
+# none:   'Disk: 74G / 118G (66%)'
+#         'Disk: 74G / 118G (66%)'
+#         'Disk: 74G / 118G (66%)'
+disk_subtitle="mount"
+
+# Disk percent.
+# Show/Hide disk percent.
+#
+# Default: 'on'
+# Values:  'on', 'off'
+# Flag:    --disk_percent
+#
+# Example:
+# on:  'Disk (/): 74G / 118G (66%)'
+# off: 'Disk (/): 74G / 118G'
+disk_percent="on"
+
+
+# Song
+
+
+# Manually specify a music player.
+#
+# Default: 'auto'
+# Values:  'auto', 'player-name'
+# Flag:    --music_player
+#
+# Available values for 'player-name':
+#
+# amarok
+# audacious
+# banshee
+# bluemindo
+# clementine
+# cmus
+# deadbeef
+# deepin-music
+# dragon
+# elisa
+# exaile
+# gnome-music
+# gmusicbrowser
+# gogglesmm
+# guayadeque
+# io.elementary.music
+# iTunes
+# juk
+# lollypop
+# mocp
+# mopidy
+# mpd
+# muine
+# netease-cloud-music
+# olivia
+# playerctl
+# pogo
+# pragha
+# qmmp
+# quodlibet
+# rhythmbox
+# sayonara
+# smplayer
+# spotify
+# strawberry
+# tauonmb
+# tomahawk
+# vlc
+# xmms2d
+# xnoise
+# yarock
+music_player="auto"
+
+# Format to display song information.
+#
+# Default: '%artist% - %album% - %title%'
+# Values:  '%artist%', '%album%', '%title%'
+# Flag:    --song_format
+#
+# Example:
+# default: 'Song: Jet - Get Born - Sgt Major'
+song_format="%artist% - %album% - %title%"
+
+# Print the Artist, Album and Title on separate lines
+#
+# Default: 'off'
+# Values:  'on', 'off'
+# Flag:    --song_shorthand
+#
+# Example:
+# on:  'Artist: The Fratellis'
+#      'Album: Costello Music'
+#      'Song: Chelsea Dagger'
+#
+# off: 'Song: The Fratellis - Costello Music - Chelsea Dagger'
+song_shorthand="off"
+
+# 'mpc' arguments (specify a host, password etc).
+#
+# Default:  ''
+# Example: mpc_args=(-h HOST -P PASSWORD)
+mpc_args=()
+
+
+# Text Colors
+
+
+# Text Colors
+#
+# Default:  'distro'
+# Values:   'distro', 'num' 'num' 'num' 'num' 'num' 'num'
+# Flag:     --colors
+#
+# Each number represents a different part of the text in
+# this order: 'title', '@', 'underline', 'subtitle', 'colon', 'info'
+#
+# Example:
+# colors=(distro)      - Text is colored based on Distro colors.
+# colors=(4 6 1 8 8 6) - Text is colored in the order above.
+colors=(distro)
+
+
+# Text Options
+
+
+# Toggle bold text
+#
+# Default:  'on'
+# Values:   'on', 'off'
+# Flag:     --bold
+bold="on"
+
+# Enable/Disable Underline
+#
+# Default:  'on'
+# Values:   'on', 'off'
+# Flag:     --underline
+underline_enabled="on"
+
+# Underline character
+#
+# Default:  '-'
+# Values:   'string'
+# Flag:     --underline_char
+underline_char="-"
+
+
+# Info Separator
+# Replace the default separator with the specified string.
+#
+# Default:  ':'
+# Flag:     --separator
+#
+# Example:
+# separator="->":   'Shell-> bash'
+# separator=" =":   'WM = dwm'
+separator=":"
+
+
+# Color Blocks
+
+
+# Color block range
+# The range of colors to print.
+#
+# Default:  '0', '15'
+# Values:   'num'
+# Flag:     --block_range
+#
+# Example:
+#
+# Display colors 0-7 in the blocks.  (8 colors)
+# neofetch --block_range 0 7
+#
+# Display colors 0-15 in the blocks. (16 colors)
+# neofetch --block_range 0 15
+block_range=(0 15)
+
+# Toggle color blocks
+#
+# Default:  'on'
+# Values:   'on', 'off'
+# Flag:     --color_blocks
+color_blocks="on"
+
+# Color block width in spaces
+#
+# Default:  '3'
+# Values:   'num'
+# Flag:     --block_width
+block_width=3
+
+# Color block height in lines
+#
+# Default:  '1'
+# Values:   'num'
+# Flag:     --block_height
+block_height=1
+
+# Color Alignment
+#
+# Default: 'auto'
+# Values: 'auto', 'num'
+# Flag: --col_offset
+#
+# Number specifies how far from the left side of the terminal (in spaces) to
+# begin printing the columns, in case you want to e.g. center them under your
+# text.
+# Example:
+# col_offset="auto" - Default behavior of neofetch
+# col_offset=7      - Leave 7 spaces then print the colors
+col_offset="auto"
+
+# Progress Bars
+
+
+# Bar characters
+#
+# Default:  '-', '='
+# Values:   'string', 'string'
+# Flag:     --bar_char
+#
+# Example:
+# neofetch --bar_char 'elapsed' 'total'
+# neofetch --bar_char '-' '='
+bar_char_elapsed="-"
+bar_char_total="="
+
+# Toggle Bar border
+#
+# Default:  'on'
+# Values:   'on', 'off'
+# Flag:     --bar_border
+bar_border="on"
+
+# Progress bar length in spaces
+# Number of chars long to make the progress bars.
+#
+# Default:  '15'
+# Values:   'num'
+# Flag:     --bar_length
+bar_length=15
+
+# Progress bar colors
+# When set to distro, uses your distro's logo colors.
+#
+# Default:  'distro', 'distro'
+# Values:   'distro', 'num'
+# Flag:     --bar_colors
+#
+# Example:
+# neofetch --bar_colors 3 4
+# neofetch --bar_colors distro 5
+bar_color_elapsed="distro"
+bar_color_total="distro"
+
+
+# Info display
+# Display a bar with the info.
+#
+# Default: 'off'
+# Values:  'bar', 'infobar', 'barinfo', 'off'
+# Flags:   --cpu_display
+#          --memory_display
+#          --battery_display
+#          --disk_display
+#
+# Example:
+# bar:     '[---=======]'
+# infobar: 'info [---=======]'
+# barinfo: '[---=======] info'
+# off:     'info'
+cpu_display="off"
+memory_display="off"
+battery_display="off"
+disk_display="off"
+
+
+# Backend Settings
+
+
+# Image backend.
+#
+# Default:  'ascii'
+# Values:   'ascii', 'caca', 'chafa', 'jp2a', 'iterm2', 'off',
+#           'pot', 'termpix', 'pixterm', 'tycat', 'w3m', 'kitty'
+# Flag:     --backend
+image_backend="ascii"
+
+# Image Source
+#
+# Which image or ascii file to display.
+#
+# Default:  'auto'
+# Values:   'auto', 'ascii', 'wallpaper', '/path/to/img', '/path/to/ascii', '/path/to/dir/'
+#           'command output (neofetch --ascii "$(fortune | cowsay -W 30)")'
+# Flag:     --source
+#
+# NOTE: 'auto' will pick the best image source for whatever image backend is used.
+#       In ascii mode, distro ascii art will be used and in an image mode, your
+#       wallpaper will be used.
+image_source="auto"
+
+
+# Ascii Options
+
+
+# Ascii distro
+# Which distro's ascii art to display.
+#
+# Default: 'auto'
+# Values:  'auto', 'distro_name'
+# Flag:    --ascii_distro
+# NOTE: AIX, Alpine, Anarchy, Android, Antergos, antiX, "AOSC OS",
+#       "AOSC OS/Retro", Apricity, ArcoLinux, ArchBox, ARCHlabs,
+#       ArchStrike, XFerience, ArchMerge, Arch, Artix, Arya, Bedrock,
+#       Bitrig, BlackArch, BLAG, BlankOn, BlueLight, bonsai, BSD,
+#       BunsenLabs, Calculate, Carbs, CentOS, Chakra, ChaletOS,
+#       Chapeau, Chrom*, Cleanjaro, ClearOS, Clear_Linux, Clover,
+#       Condres, Container_Linux, CRUX, Cucumber, Debian, Deepin,
+#       DesaOS, Devuan, DracOS, DarkOs, DragonFly, Drauger, Elementary,
+#       EndeavourOS, Endless, EuroLinux, Exherbo, Fedora, Feren, FreeBSD,
+#       FreeMiNT, Frugalware, Funtoo, GalliumOS, Garuda, Gentoo, Pentoo,
+#       gNewSense, GNOME, GNU, GoboLinux, Grombyang, Guix, Haiku, Huayra,
+#       Hyperbola, janus, Kali, KaOS, KDE_neon, Kibojoe, Kogaion,
+#       Korora, KSLinux, Kubuntu, LEDE, LFS, Linux_Lite,
+#       LMDE, Lubuntu, Lunar, macos, Mageia, MagpieOS, Mandriva,
+#       Manjaro, Maui, Mer, Minix, LinuxMint, MX_Linux, Namib,
+#       Neptune, NetBSD, Netrunner, Nitrux, NixOS, Nurunner,
+#       NuTyX, OBRevenge, OpenBSD, openEuler, OpenIndiana, openmamba,
+#       OpenMandriva, OpenStage, OpenWrt, osmc, Oracle, OS Elbrus, PacBSD,
+#       Parabola, Pardus, Parrot, Parsix, TrueOS, PCLinuxOS, Peppermint,
+#       popos, Porteus, PostMarketOS, Proxmox, Puppy, PureOS, Qubes, Radix,
+#       Raspbian, Reborn_OS, Redstar, Redcore, Redhat, Refracted_Devuan,
+#       Regata, Rosa, sabotage, Sabayon, Sailfish, SalentOS, Scientific,
+#       Septor, SereneLinux, SharkLinux, Siduction, Slackware, SliTaz,
+#       SmartOS, Solus, Source_Mage, Sparky, Star, SteamOS, SunOS,
+#       openSUSE_Leap, openSUSE_Tumbleweed, openSUSE, SwagArch, Tails,
+#       Trisquel, Ubuntu-Budgie, Ubuntu-GNOME, Ubuntu-MATE, Ubuntu-Studio,
+#       Ubuntu, Venom, Void, Obarun, windows10, Windows7, Xubuntu, Zorin,
+#       and IRIX have ascii logos
+# NOTE: Arch, Ubuntu, Redhat, and Dragonfly have 'old' logo variants.
+#       Use '{distro name}_old' to use the old logos.
+# NOTE: Ubuntu has flavor variants.
+#       Change this to Lubuntu, Kubuntu, Xubuntu, Ubuntu-GNOME,
+#       Ubuntu-Studio, Ubuntu-Mate  or Ubuntu-Budgie to use the flavors.
+# NOTE: Arcolinux, Dragonfly, Fedora, Alpine, Arch, Ubuntu,
+#       CRUX, Debian, Gentoo, FreeBSD, Mac, NixOS, OpenBSD, android,
+#       Antrix, CentOS, Cleanjaro, ElementaryOS, GUIX, Hyperbola,
+#       Manjaro, MXLinux, NetBSD, Parabola, POP_OS, PureOS,
+#       Slackware, SunOS, LinuxLite, OpenSUSE, Raspbian,
+#       postmarketOS, and Void have a smaller logo variant.
+#       Use '{distro name}_small' to use the small variants.
+ascii_distro="auto"
+
+# Ascii Colors
+#
+# Default:  'distro'
+# Values:   'distro', 'num' 'num' 'num' 'num' 'num' 'num'
+# Flag:     --ascii_colors
+#
+# Example:
+# ascii_colors=(distro)      - Ascii is colored based on Distro colors.
+# ascii_colors=(4 6 1 8 8 6) - Ascii is colored using these colors.
+ascii_colors=(distro)
+
+# Bold ascii logo
+# Whether or not to bold the ascii logo.
+#
+# Default: 'on'
+# Values:  'on', 'off'
+# Flag:    --ascii_bold
+ascii_bold="on"
+
+
+# Image Options
+
+
+# Image loop
+# Setting this to on will make neofetch redraw the image constantly until
+# Ctrl+C is pressed. This fixes display issues in some terminal emulators.
+#
+# Default:  'off'
+# Values:   'on', 'off'
+# Flag:     --loop
+image_loop="off"
+
+# Thumbnail directory
+#
+# Default: '~/.cache/thumbnails/neofetch'
+# Values:  'dir'
+thumbnail_dir="${XDG_CACHE_HOME:-${HOME}/.cache}/thumbnails/neofetch"
+
+# Crop mode
+#
+# Default:  'normal'
+# Values:   'normal', 'fit', 'fill'
+# Flag:     --crop_mode
+#
+# See this wiki page to learn about the fit and fill options.
+# https://github.com/dylanaraps/neofetch/wiki/What-is-Waifu-Crop%3F
+crop_mode="normal"
+
+# Crop offset
+# Note: Only affects 'normal' crop mode.
+#
+# Default:  'center'
+# Values:   'northwest', 'north', 'northeast', 'west', 'center'
+#           'east', 'southwest', 'south', 'southeast'
+# Flag:     --crop_offset
+crop_offset="center"
+
+# Image size
+# The image is half the terminal width by default.
+#
+# Default: 'auto'
+# Values:  'auto', '00px', '00%', 'none'
+# Flags:   --image_size
+#          --size
+image_size="auto"
+
+# Gap between image and text
+#
+# Default: '3'
+# Values:  'num', '-num'
+# Flag:    --gap
+gap=3
+
+# Image offsets
+# Only works with the w3m backend.
+#
+# Default: '0'
+# Values:  'px'
+# Flags:   --xoffset
+#          --yoffset
+yoffset=0
+xoffset=0
+
+# Image background color
+# Only works with the w3m backend.
+#
+# Default: ''
+# Values:  'color', 'blue'
+# Flag:    --bg_color
+background_color=
+
+
+# Misc Options
+
+# Stdout mode
+# Turn off all colors and disables image backend (ASCII/Image).
+# Useful for piping into another command.
+# Default: 'off'
+# Values: 'on', 'off'
+stdout="off"
+
+#+end_src
+
+
+
+** Waybar
+*** conf
+:PROPERTIES:
+:header-args: :tangle ~/.config/waybar/config.jsonc
+:END:
+#+begin_src conf
+  {
+	
+      "layer": "top",
+      "position": "top",
+      "mod": "dock",
+      "exclusive": true,
+      "passthrough": false,
+      "gtk-layer-shell": true,
+      "height": 20,
+      "margin-top":0,
+      "margin-bottom":0,
+   
+
+      "modules-left": ["custom/launch_wofi","wlr/workspaces","cpu","memory","disk","hyprland/window"],
+      "modules-center": ["custom/lock_screen","custom/updates","clock","custom/power_btn"],
+      "modules-right": ["custom/power_profile","battery","backlight","pulseaudio","pulseaudio#microphone","tray","custom/light_dark"],
+    
+      "hyprland/window": {
+          "format": "{}",
+	
+      },
+
+      "custom/launch_wofi": {
+          "format": "",
+          "on-click": "pkill wofi; wofi -n",
+          "tooltip": false
+      },
+
+      "custom/lock_screen": {
+          "format": "",
+          "on-click": "sh -c '(sleep 0.5s; swaylock)' & disown",
+          "tooltip": false
+      },
+
+      "custom/light_dark": {
+          "format": "󰐾",
+          "on-click": "~/.config/waybar/scripts/baraction light",
+          "tooltip": false
+      },
+
+      "custom/power_btn": {
+          "format": "",
+          "on-click": "sh -c '(sleep 0.5s; wlogout --protocol layer-shell)' & disown",
+          "tooltip": false
+      },
+
+      "cpu": {
+          "interval": 10,
+          "format": " {usage}%",
+          "max-length": 10,
+          "on-click": "kitty htop"
+      },
+
+      "disk": {
+          "interval": 30,
+          "format": "󰋊 {percentage_used}%",
+          "path": "/",
+          "tooltip": true,
+          "tooltip-format": "HDD - {used} used out of {total} on {path} ({percentage_used}%)",
+          "on-click": "thunar"
+      },
+
+      "memory": {
+          "interval": 30,
+          "format": " {}%",
+          "max-length": 10,
+          "tooltip": true,
+          "tooltip-format": "Memory - {used:0.1f}GB used",
+          "on-click": "kitty htop"
+      },
+
+      "custom/updates": {
+          "format": "{}",
+          "exec": "~/.config/waybar/scripts/update-sys",
+          "on-click": "~/.config/waybar/scripts/update-sys update",
+          "interval": 300,
+          "tooltip": true
+      },
+
+      "wlr/workspaces": {
+          "disable-scroll": true,
+          "all-outputs": true,
+          "on-click": "activate",
+          "persistent_workspaces": {
+              "1": [],
+              "2": [],
+              "3": [],
+              "4": [],
+              "5": [],
+              "6": [],
+              "7": [],
+              "8": [],
+              "9": [],
+              "10": []
+          }
+      },
+    
+      "custom/power_profile": {
+          //shows the current power profile and switches to next on click
+          "exec": "asusctl profile -p | sed s:'Active profile is'::",
+          "interval": 30,
+          "format": "󰈐{}", 
+          "on-click": "asusctl profile -n; pkill -SIGRTMIN+8 waybar",
+          "signal": 8
+      },
+
+     "custom/weather": {
+          //shows the current weather and forecast
+          "tooltip" : true,
+          "format" : "{}",
+          "interval" : 30,
+          "exec" : "~/.config/waybar/scripts/waybar-wttr.py",
+          "return-type" : "json"
+      },
+
+      "tray": {
+          "icon-size": 18,
+          "spacing": 10
+      },
+
+      "clock": {
+          "format": "{:%I:%M %p}",
+          "tooltip": true,
+          "tooltip-format": "{: %A, %B %e %Y}"
+      },
+
+      "backlight": {
+          "device": "intel_backlight",
+          "format": "{icon} {percent}%",
+          "format-icons": ["󰃞", "󰃟", "󰃠"],
+          "on-scroll-up": "brightnessctl set 1%+",
+          "on-scroll-down": "brightnessctl set 1%-",
+          "min-length": 6
+      },
+
+      "battery": {
+          "states": {
+              "good": 95,
+              "warning": 30,
+              "critical": 20
+          },
+          "format": "{icon} {capacity}%",
+          "format-charging": " {capacity}%",
+          "format-plugged": " {capacity}%",
+          "format-alt": "{time} {icon}",
+          "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+      },
+
+      "pulseaudio": {
+          "format": "{icon} {volume}%",
+          "format-muted": "",
+          "on-click": "pamixer -t",
+          "on-click-right": "pavucontrol",
+          "on-scroll-up": "pamixer -i 5",
+          "on-scroll-down": "pamixer -d 5",
+          "scroll-step": 5,
+          "format-icons": {
+              "headphone": "",
+              "hands-free": "",
+              "headset": "",
+              "phone": "",
+              "portable": "",
+              "car": "",
+              "default": ["", "", ""]
+          }
+      },
+
+      "pulseaudio#microphone": {
+          "format": "{format_source}",
+          "format-source": " {volume}%",
+          "format-source-muted": "",
+          "on-click": "pamixer --default-source -t",
+          "on-click-right": "pavucontrol",
+          "on-scroll-up": "pamixer --default-source -i 5",
+          "on-scroll-down": "pamixer --default-source -d 5",
+          "scroll-step": 5
+      },
+    
+      "temperature": {
+          "thermal-zone": 1,
+          "format": " {temperatureF}°F",
+          "critical-threshold": 70,
+          "format-critical": " {temperatureC}°C",
+          "on-click": "kitty --start-as=fullscreen --title btop sh -c 'btop'"
+      }
+  }
+
+#+end_src
+*** style [ dark mode ]
+:PROPERTIES:
+:header-args: :tangle ~/.config/waybar/style/style-dark.css :tangle ~/.config/waybar/style/style.css
+:END:
+#+begin_src css
+ * {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font";
+    font-weight: bold;
+    font-size: 12px;
+    min-height: 0;
+    
+}
+
+window#waybar {
+    background: rgba(21, 18, 27, 0);
+    color: #cdd6f4;
+}
+
+tooltip {
+    background: #1e1e2e;
+    opacity: 0.8;
+    border-radius: 10px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: #11111b;
+}
+
+tooltip label{
+    color: #cdd6f4;
+}
+
+#workspaces button {
+    padding: 5px;
+    color: #313244;
+    margin-right: 5px;
+}
+
+#workspaces button.active {
+    color: #a6adc8;
+}
+
+#workspaces button.focused {
+    color: #a6adc8;
+    background: #eba0ac;
+    border-radius: 10px;
+}
+
+#workspaces button.urgent {
+    color: #11111b;
+    background: #a6e3a1;
+    border-radius: 10px;
+}
+
+#workspaces button:hover {
+    background: #11111b;
+    color: #cdd6f4;
+    border-radius: 10px;
+}
+
+#custom-launch_wofi,
+#custom-lock_screen,
+#custom-light_dark,
+#custom-power_btn,
+#custom-power_profile,
+#custom-weather,
+#window,
+#cpu,
+#disk,
+#custom-updates,
+#memory,
+#clock,
+#battery,
+#pulseaudio,
+#network,
+#tray,
+#temperature,
+#workspaces,
+#backlight {
+    background: #1e1e2e;
+    opacity: 0.8;
+    padding: 0px 10px;
+    margin: 3px 0px;
+    margin-top: 10px;
+    border: 0px;
+}
+
+#tray, #custom-lock_screen, #temperature, #backlight, #custom-launch_wofi, #cpu {
+    border-radius: 10px 0px 0px 10px;
+}
+
+#custom-light_dark, #custom-power_btn, #workspaces, #pulseaudio.microphone, #battery, #disk {
+    border-radius: 0px 10px 10px 0px;
+    margin-right: 10px;
+}
+
+#temperature.critical {
+    color: #e92d4d;
+}
+
+
+#workspaces {
+    padding-right: 0px;
+    padding-left: 5px;
+}
+
+#custom-power_profile {
+    color: #a6e3a1;
+    border-left: 0px;
+    border-right: 0px;
+}
+
+#window {
+    border-radius: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+#custom-launch_wofi {
+    color: #89b4fa;
+    margin-left: 10px;
+    border-right: 0px;
+}
+
+#pulseaudio {
+    color: #89b4fa;
+    border-left: 0px;
+    border-right: 0px;
+}
+
+#pulseaudio.microphone {
+    color: #cba6f7;
+    border-left: 0px;
+    border-right: 0px;
+}
+
+#battery {
+    color: #a6e3a1;
+    border-left: 0px;
+}
+  
+
+#+end_src
+*** Scripts
+**** baraction
+:PROPERTIES:
+:header-args: :tangle ~/.config/waybar/scripts/baraction  :tangle-mode (identity #o755)
+:END:
+#+begin_src sh 
+  #!/usr/bin/bash
+
+    # HYPRV2 WAY OF SETTING THEME 
+    # Check which waybar theme is set
+    THEMEIS=$(readlink -f ~/.config/waybar/style.css | cut -d '-' -f2)
+
+    #if the theme is not dark then we need to switch to it
+    if [ $THEMEIS != "dark.css" ]; then
+        SWITCHTO="-dark"
+        
+
+
+    fi
+
+    #set the waybar theme
+    ln -sf ~/.config/waybar/style/style$SWITCHTO.css ~/.config/waybar/style.css
+
+    #set the wofi theme
+    ln -sf ~/.config/wofi/style/style$SWITCHTO.css ~/.config/wofi/style.css
+
+    #set the xfce theme
+    #xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita$SWITCHTO"
+    #xfconf-query -c xsettings -p /Net/IconThemeName -s "Adwaita$SWITCHTO"
+
+    #set the GTK theme
+    #gsettings set org.gnome.desktop.interface gtk-theme "Adwaita$SWITCHTO"
+    #gsettings set org.gnome.desktop.interface icon-theme "Adwaita$SWITCHTO"
+
+    #change the background image and be cool about it ;)
+    if [ $THEMEIS != "dark.css" ];then
+       swww img ~/.config/hypr/wallpaper/walld.jpg --transition-fps 60 --transition-type wipe --transition-duration 2
+
+       else
+           swww img ~/.config/hypr/wallpaper/walll.jpg --transition-fps 60 --transition-type wipe --transition-duration 2
+
+    fi
+
+
+       #update the sddm image
+    #ln -sf /usr/share/sddm/themes/sdt/Backgrounds/wallpaper$SWITCHTO.jpg /usr/share/sddm/themes/sdt/wallpaper.jpg
+
+    #restart the waybar
+    killall -SIGUSR2 waybar
+
+
+
+#+end_src
+
+
+
+
+
+
+
+
+
+
+
+
+* Bash
+** .bashrc
+:PROPERTIES:
+:header-args: :tangle ~/.bashrc
+:END:
+
+#+begin_src sh
+
+  alias tomatoshell=/home/rish/.config/tomatoshell/tomatoshell
+  pomo(){
+   tomatoshell -t ${1:-25} -d ${2:-5} -n ${3:-4} -f
+  }
+  
+  alias shut="/home/rish/.config/hypr/scripts/shut"
+   #+end_src
+** .bashprofile
+:PROPERTIES:
+:header-args: :tangle ~/.bash_profile
+:END:
+
+#+begin_src sh
+      runhypr() { 
+          if ps -a | grep -q Hyprland ;then
+             :
+           else
+                 Hyprland
+          fi
+
+      }
+
+      runhypr
+   > /etc/issue
+ 
+#+end_src
+
+
+
+
+
+
+
+
+* Tips/Pckgs
+** org mode tangle (set permission)
+- after each tangling the org mode destroys the permission of file and creates it as default
+- in order to prevent it we can use :tangle-mode  header args to set permission at the time of creation
+- [[*bgaction][bgaction_exmaple]  see this for  
+** header arguments
+dont include space betwenn heading and header
+
+** Custom login Screen
+[[https://quoteme.github.io/posts/custom_loginprompt_linux][src ]] 
+- by creating a service and running it at using systemd
+- also clear /etc/issue file after login to clear up the mess
+*** Instructions
+   - install neofetch or screenfetch (sudo pacman -S neofetch) (I will use neofetch here, but it is the same process for screenfetch)
+    - download my neofetch_login_prompt.service system.d service file
+    - place this file in /etc/systemd/system/
+    - enable the script to run at boot: sudo systemctl enable neofetch_login_prompt --now
+    - reboot! it should work now
+
+#+begin_src sh
+# /etc/systemd/system/neofetch_login_prompt.service
+[Util]
+Description=Display Neofetch before login in a TTY
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStop=/usr/bin/env bash -ec 'neofetch > /etc/issue'
+
+[Install]
+WantedBy=multi-user.target
+#+end_src
+** Packages
+*** DESKTOP APPLICATIONS
+  - emacs-nativecomp
+  - joplin
+  - firefox
+  - obsidian
+  - telegram-desktop
+  - media
+    - vlc
+    - mpv
+  - thunar
+    - thunar-archive-plugin
+    - file-roller
+    for zip extraction
+    - gvfs
+    for auto mounting
+    - mtpfs, gvfs, gvfs-gphoto2, gvfs-mtp, jmptfs,
+    for phone connection
+    - xfce4-settings
+    - nwg-look
+    to edit GTK application like Thunar
+  - linux-wifi-hotspot
+  - DISK UTILITY
+    - gnome-disk-utility
+    - gparted
+*** TERMINAL APPLICATIONS
+  - vim
+  - ranger
+    - trash-cli
+  - nnn
+  - kitty
+  - git
+  - pacman -contrib
+    for helping in cleaning for pacman
+   rarely used as pacman automatically does this
+  - wget
+    retirves files using url from terminal
+  - acpi (battery info)
+  - auto-cpufreq
+  - tomatoshell, figlet, bc
+  - tcpdump
+*** DESKTOP ENVIRONMENT APPLICATIONS
+  - hyprland-git
+    - xdg-desktop-portal-hyprland
+    - polkit-gnome
+      
+  - waybar-hyprland-git
+  - swaylock-effects
+  - sww
+  - FONTS
+    - noto-font-emoji
+    - ttf-jetbrains-mono-nerd
+  - wofi
+  - ScreenShot  
+    - grim 
+    - swappy
+    screenshot editor
+    - slurp
+    region slector
+  - wlogout
+    logoutmenu
+  - sound and screen share
+    pamixer,  pipewire-alsa, pipwire-pulse, wireplumber(screenshare)
+  - bluetooth
+    - bluez, blueman, bluez-utils, pavucontrol
+** auto create directory
+   in order for this script to work on new system/ fresh system or
+   if the folder is not present we can use mkdirp yes in header
+   #+begin_src emacs-lisp :auto_tangle:0
+:header-args: :tangle ~/mks/kkio/oilo/filoo/i.shs :mkdirp yes
+   #+end_src
+
+
+* esy-archy
+**  basics layer arch
+  refr freecodecamp Handbook
+
+**  Hypralnd Setup
+- hyprland-git (AUR)
+  or manually compile using cmake from github
+- Must have
+  refer [[https://wiki.hyprland.org/Useful-Utilities/Must-have/][src]]
+  - A notification daemon
+    refer HYPRV2 Script
+  - Pipewire
+    refer joplin
+  - XDG Desktop Portal
+    - xdg-desktop-portal-hyprland
+      refer hyprv2 script or
+      [[https://wiki.hyprland.org/Useful-Utilities/Hyprland-desktop-portal/][src]]
+  - Authentication Agent
+    gnome-polkit
+  - Waybar
+- Configure using HYPRV2 ++ rish Script
+
+
+** Emacs Setup
+THis is the best software which was ever created
+- set is using rish+SC
+
+
+** Other Application
+- Bluetooth
+- pipwire utilities
+- sww
+- wofi
+  pending...
+o
+
+
+
+
+
+
+
+
+** README
+:PROPERTIES:
+:header-args: :tangle /home/rish/desktop/esy-archy/readme.md
+:END:
+this readme is for esy-arch repo
+#+begin_src html
+  # esy-archy
+This repo contains an org file which can be used to set a arch-hyprland environment based on emacs for better Desktop experience.
+
+
+
+**Requirements**
+- Basic Arch Setup [refer Pacakge section in config.org ]
+- emacs-nativecomp
+- Hyprland 
+
+/If you dont want use a particular application you can remove it from config.org before saving it/
+
+**HOW TO EXEECUTE THIS**  
+  - Set Up Arch , Hyprland
+  - then install emacs-nativecomp
+  - put .emacs.d in .config 
+  - create sym link [refer rish utilitis for this ] `
+"#+begin_src emacs-lisp
+(use-package org-auto-tangle
+  :defer t
+  :hook (org-mode . org-auto-tangle-mode)) #+end_src"
+
+- paste this snippet in .emacs file 
+- now evaluate the config.org file
+
+Mentions
+- System Crafters [https://github.com/daviwil/emacs-from-scratch]
+- HYPRV2 [https://github.com/SolDoesTech/HyprV2.git]
+- rish [ https://github.com/rishabhsinghcomp]
+
+#+end_
