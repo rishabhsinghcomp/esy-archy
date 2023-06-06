@@ -27,4 +27,4 @@ echo "BASIC INSTALLATION DONE---"
 
 echo "Open config.org from emacs"
 echo "run command 'org-babel-tangle' "
-echo "Restart emacs"
+echo "Restart emacst"

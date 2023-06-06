@@ -567,9 +567,7 @@ specifically) to exit the transient key map.
 *** Basic Config
 **** info
 This section contains the basic configuration for org-mode plus the
-configuration for Org agendas and capture templates. There’s a lot to
-unpack in here so I’d recommend watching the videos for Part 5 and
-Part 6 for a full explanation.
+configuration for Org agendas and capture templates.
 **** code
 #+begin_src emacs-lisp
 
@@ -940,7 +938,6 @@ before doign this paste .emacs.d in .config and .emacs in .emacs.d
 *** save backup
 this code block saves backup of config.org  file whenever config.org is saved
 #+begin_src emacs-lisp
-;; Define a function to run the Bash command
 (defun my/run-bash-command-on-save ()
   (when (string= (buffer-name) "config.org") ; Replace with the actual buffer name
     (shell-command "cp ~/config.org ~/desktop/esy-archy/config-b.org")) ; Replace with the actual Bash command
@@ -2795,32 +2792,31 @@ o
 :END:
 this readme is for esy-arch repo
 #+begin_src html
-# esy-archy
-This repo contains an org file which can be used to set a arch-hyprland environment based on emacs for better Desktop experience.
-**Requirements**
-- Basic Arch Setup [refer Pacakge section in config.org ]
-- emacs-nativecomp
-- Hyprland 
+     # esy-archy
+     This repo contains an org file which can be used to set a arch-hyprland environment based on emacs for better Desktop experience.
 
-/If you dont want use a particular application you can remove it from config.org before saving it/
+  Disclaimer:
+  This Desktop Environment is heavily based on emacs and hyprland, so if you are not familiar with emacs,
+   then it is recommended to get familiar with emacs and then use this configuration,
+  a script is already provided to do the manual work.
 
-**HOW TO EXEECUTE THIS**  
-  - Set Up Arch , Hyprland
-  - then install emacs-nativecomp
-  - put .emacs.d in .config 
-  - create sym link [refer rish utilitis for this ] `
-"#+begin_src emacs-lisp
-(use-package org-auto-tangle
-  :defer t
-  :hook (org-mode . org-auto-tangle-mode)) #+end_src"
 
-- paste this snippet in .emacs file 
-- now evaluate the config.org file
+     ,**Requirements**
+     - Basic Arch Setup [refer Pacakge section in config.org ]
+     - emacs-nativecomp
+     - Hyprland
 
-Mentions
-- System Crafters [https://github.com/daviwil/emacs-from-scratch]
-- HYPRV2 [https://github.com/SolDoesTech/HyprV2.git]
-- rish [ https://github.com/rishabhsinghcomp]
+     /If you dont want use a particular application you can remove it from config.org before saving it/
+
+     ,**Installation Guide**  
+       - Set Up Arch , Hyprland
+       - then install emacs-nativecomp
+       - run the setup script
+
+     Mentions
+     - System Crafters [https://github.com/daviwil/emacs-from-scratch]
+     - HYPRV2 [https://github.com/SolDoesTech/HyprV2.git]
+     - rish [ https://github.com/rishabhsinghcomp]
 
 #+end_src
 
@@ -2863,7 +2859,7 @@ creating a script which can be used by genral user to setup the emacs and config
 
   echo "Open config.org from emacs"
   echo "run command 'org-babel-tangle' "
-  echo "Restart emacs"
+  echo "Restart emacst"
 
 
 #+end_src
