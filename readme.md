@@ -10,7 +10,7 @@
  **WHY TO USE THIS??**
  If you are someone who wants a centralised place to edit all your apps configuration then this method of configuring config files can proove useful to you.
  Like in Windows there is a settings application which can be used to change settings of the system, similarly this config file can be used to create a central place to edit all your configuration.
- It is not only limited to configuration, if you know *org* mode then you can change the way you operate your computer.
+ It is not only limited to configuration, if you know *org* mode then you can change the way you operate your computer. 
  This method can be used to manage your personal files, your projects , college/school related stuff .
  Initial Setup can be a little cumbersome but in long run it will be beneficial.
 

@@ -19,12 +19,13 @@ echo "Creating emacs directory in .config"
 
 
 cat bse.emacs >> ~.config/.emacs.d/.emacs
+cat config-b.org >> ~/.config/.emacs.d/.emacs
 
 echo "Opening Emacs to install necessary packages"
 sleep 5
 
 echo "BASIC INSTALLATION DONE---"
 
-echo "Open config.org from emacs"
+echo "Open config.org in your HOME folder"
 echo "run command 'org-babel-tangle' "
 echo "Restart emacst"
