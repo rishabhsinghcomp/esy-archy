@@ -1,9 +1,4 @@
-
-
 #!/bin/bash
-
-
-
   #for ease of access putting .emacs.d in .config
 echo "Creating emacs directory in .config"
   if ! (ls ~/ | grep -q ".emacs.d") ;then
