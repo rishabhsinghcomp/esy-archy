@@ -319,7 +319,6 @@ this loads desktop env
     shut
 #+end_src
 
-
 * Emacs
 :PROPERTIES:
 :header-args: :tangle ~/.config/.emacs.d/.emacs
@@ -2644,6 +2643,8 @@ tooltip label{
     alias shut="/home/rish/.config/hypr/scripts/shut"
     alias xob-sync="syncthing &"
     alias xob-bkp="rclone sync /home/rish/desktop/XOB xob-drive: --verbose"
+
+    alias phone="ssh phone"
    #+end_src
 ** .bashprofile
 :PROPERTIES:
@@ -2662,7 +2663,7 @@ tooltip label{
 
       runhypr
    > /etc/issue
- 
+     syncthing & 
 #+end_src
 
 
@@ -2791,10 +2792,21 @@ WantedBy=multi-user.target
     Save the file and quit the text editor.
     Run: sudo update-grub
     Reboot.
-
-
-
-
+** SSH PHONE INSTRUCTIONS
+- on phone
+  - pkg install openssh
+  - sshd
+- on computer
+  in .ssh/config add
+  #+begin_src conf
+Host phone
+    HostName 192.168.0.153
+    Port 8022
+    User u0_a128
+  #+end_src
+  - ssh-keygen
+  - ssh-copy-id -i ~/.ssh/id_rsa phone
+ - ssh myphone
 * esy-archy
 ** OUTLINE
 ***  basics layer arch
