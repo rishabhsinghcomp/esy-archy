@@ -166,7 +166,8 @@ windowrulev2 = move 100%-433 53,class:^(wofi)$,title:^(clippick)$
     $mainMod = SUPER
     # Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
     bind = $mainMod, SPACE, exec, wofi # Show the graphical app launcher
-    bind = $mainMod, S, exec, grim -g "$(slurp)" - | swappy -f - # take a screenshot
+    bind = $mainMod, S, exec, grim -g "$(slurp)" - | swappy -f  - # take a screenshot
+    bind = $mainMod,  X, exec, grim -g "$(slurp)" "$folder"/home/rish/Desktop/screenshot/"$(date +%Y%m%d-%H%M%S)".png
     bind = $mainMod, L, exec, swaylock # Lock the screen
     bind = $mainMod, M, exec, wlogout --protocol layer-shell # show the logout window
 
@@ -776,12 +777,17 @@ up org-babel-load-languages for each language you’d like to use. This
 page documents all of the languages that you can use with org-babel.
 **** code
 #+begin_src emacs-lisp
-;(org-babel-do-load-languages
-;  'org-babel-load-languages
-;  '((emacs-lisp . t)
-;    (python . t)))
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+  (python . t)))
+;; this prevent auto indnetation when enter is pressed >> https://rb.gy/cz8w2
+(setq org-edit-src-content-indentation 0)
+(push '("conf-unix" . conf-unix) org-src-lang-modes)
 
-;(push '("conf-unix" . conf-unix) org-src-lang-modes)
+
+
+
 #+end_src
 
 
@@ -831,8 +837,8 @@ these templates are custom code blocks
   (add-to-list 'org-structure-template-alist '("conf" . "src conf") )
   (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
   (add-to-list 'org-structure-template-alist '("css" . "src css"))  
-  (add-to-list 'org-structure-template-alist '("p" . "#+QUESTION: \n#+LINK: \n#+SOLUTION: "))
-
+  (add-to-list 'org-structure-template-alist '("qw" . "#+QUESTION: \n#+LINK: \n#+SOLUTION: "))
+  (add-to-list 'org-structure-template-alist '("py" . "src python"))
 #+end_src
 **** code-block-commentk
 ***** src
@@ -852,6 +858,18 @@ this block automatically detects language and applies respected comment
 #+end_src
 
 
+*** Org-Dowload(for images)
+#+begin_src emacs-lisp
+(use-package org-download
+  :ensure t
+  :defer t
+  :init
+  ;; Add handlers for drag-and-drop when Org is loaded.
+  (with-eval-after-load 'org
+    (org-download-enable)))
+
+((org-mode . ((eval . (setq org-download-image-dir (concat "./" (file-name-base buffer-file-name)))))))
+#+end_src
 ** Development
 
 *** Projectile
@@ -922,6 +940,11 @@ save changes of previous state
 #+begin_src emacs-lisp
 (desktop-save-mode 1)
 #+end_src
+*** changing path of emacs configuration file
+before doign this paste .emacs.d in .config and .emacs in .emacs.d
+
+  ln -s ~/.config/.emacs.d ~/.emacs.d
+  ln -s ~/.config/.emacs.d/.emacs ~/.emacs
 *** print all fonts
 #+begin_src emacs-lisp
 ;;pritn font
@@ -931,17 +954,12 @@ save changes of previous state
 
 
 #+end_src
-*** changing path of emacs configuration file
-before doign this paste .emacs.d in .config and .emacs in .emacs.d
-
-  ln -s ~/.config/.emacs.d ~/.emacs.d
-  ln -s ~/.config/.emacs.d/.emacs ~/.emacs
 *** save backup
 this code block saves backup of config.org  file whenever config.org is saved
 #+begin_src emacs-lisp
 (defun my/run-bash-command-on-save ()
   (when (string= (buffer-name) "config.org") ; Replace with the actual buffer name
-    (shell-command "cp ~/config.org ~/desktop/esy-archy/config-b.org")) ; Replace with the actual Bash command
+    (shell-command "cp ~/config.org ~/Desktop/esy-archy/config-b.org")) ; Replace with the actual Bash command
   )
 
 ;; Add the function to the after-save-hook
@@ -2634,18 +2652,35 @@ tooltip label{
 :END:
 
 #+begin_src sh
-  #fortune  | cowsay | lolcat
-    alias tomatoshell=/home/rish/.config/tomatoshell/tomatoshell
-    pomo(){
-     tomatoshell -t ${1:-25} -d ${2:-5} -n ${3:-4} -f
-    }
-    neofetch --ascii "$(fortune | cowsay -W 30)" | lolcat
-    alias shut="/home/rish/.config/hypr/scripts/shut"
-    alias xob-sync="syncthing &"
-    alias xob-bkp="rclone sync /home/rish/desktop/XOB xob-drive: --verbose"
 
-    alias phone="ssh phone"
-   #+end_src
+#STARTUP
+  #neofetch --ascii "$(fortune | cowsay -W 30)" | lolcat
+  fortune | cowsay | lolcat
+
+#VARIABLES
+       alias py="conda activate py"
+       alias shut="/home/rish/.config/hypr/scripts/shut"
+       alias xob-sync="syncthing &"
+       alias xob-bkp="rclone sync /home/rish/Desktop/XOB xob-drive: --verbose"
+       alias phone="ssh phone"
+       alias tomatoshell=/home/rish/.config/tomatoshell/tomatoshell
+
+#FUNCTIONS
+       pomo(){
+        tomatoshell -t ${1:-25} -d ${2:-5} -n ${3:-4} -f
+       }
+
+
+
+
+
+       
+
+ 
+#CONDA SETUP
+       [ -f /opt/miniconda3/etc/profile.d/conda.sh ] && source /opt/miniconda3/etc/profile.d/conda.sh
+
+    #+end_src
 ** .bashprofile
 :PROPERTIES:
 :header-args: :tangle ~/.bash_profile
@@ -2674,38 +2709,7 @@ tooltip label{
 
 
 * Tips/Pckgs
-** org mode tangle (set permission)
-- after each tangling the org mode destroys the permission of file and creates it as default
-- in order to prevent it we can use :tangle-mode  header args to set permission at the time of creation
-- [[*bgaction][bgaction_exmaple]  see this for  
-** header arguments
-dont include space betwenn heading and header
-
-** Custom login Screen
-[[https://quoteme.github.io/posts/custom_loginprompt_linux][src ]] 
-- by creating a service and running it at using systemd
-- also clear /etc/issue file after login to clear up the mess
-*** Instructions
-   - install neofetch or screenfetch (sudo pacman -S neofetch) (I will use neofetch here, but it is the same process for screenfetch)
-    - download my neofetch_login_prompt.service system.d service file
-    - place this file in /etc/systemd/system/
-    - enable the script to run at boot: sudo systemctl enable neofetch_login_prompt --now
-    - reboot! it should work now
-
-#+begin_src sh
-# /etc/systemd/system/neofetch_login_prompt.service
-[Util]
-Description=Display Neofetch before login in a TTY
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStop=/usr/bin/env bash -ec 'neofetch > /etc/issue'
-
-[Install]
-WantedBy=multi-user.target
-#+end_src
-** Packages
+** *PACKAGES*
 *** DESKTOP APPLICATIONS
   - emacs-nativecomp
   - joplin
@@ -2747,6 +2751,9 @@ WantedBy=multi-user.target
   - auto-cpufreq
   - tomatoshell, figlet, bc
   - tcpdump
+  -  tgpt-bin
+    chatgpt fot terminal
+  - miniconda3
   - *EYECANDY*
     - cowsay
     - lolcat
@@ -2756,7 +2763,7 @@ WantedBy=multi-user.target
   - hyprland-git
     - xdg-desktop-portal-hyprland
     - polkit-gnome
-      
+     
   - waybar-hyprland-git
   - swaylock-effects
   - sww
@@ -2768,6 +2775,8 @@ WantedBy=multi-user.target
   - ScreenShot  
     - grim 
     - swappy
+    - wl-clipboard
+      
     screenshot editor
     - slurp
     region slector
@@ -2780,6 +2789,37 @@ WantedBy=multi-user.target
 *** XOB
 - rclone
 - syncthing
+** org mode tangle (set permission)
+- after each tangling the org mode destroys the permission of file and creates it as default
+- in order to prevent it we can use :tangle-mode  header args to set permission at the time of creation
+- [[*bgaction][bgaction_exmaple]  see this for  
+** header arguments
+dont include space betwenn heading and header
+
+** Custom login Screen
+[[https://quoteme.github.io/posts/custom_loginprompt_linux][src ]] 
+- by creating a service and running it at using systemd
+- also clear /etc/issue file after login to clear up the mess
+*** Instructions
+   - install neofetch or screenfetch (sudo pacman -S neofetch) (I will use neofetch here, but it is the same process for screenfetch)
+    - download my neofetch_login_prompt.service system.d service file
+    - place this file in /etc/systemd/system/
+    - enable the script to run at boot: sudo systemctl enable neofetch_login_prompt --now
+    - reboot! it should work now
+
+#+begin_src sh
+# /etc/systemd/system/neofetch_login_prompt.service
+[Util]
+Description=Display Neofetch before login in a TTY
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStop=/usr/bin/env bash -ec 'neofetch > /etc/issue'
+
+[Install]
+WantedBy=multi-user.target
+#+end_src
 ** auto create directory
    in order for this script to work on new system/ fresh system or
    if the folder is not present we can use mkdirp yes in header
@@ -2807,6 +2847,31 @@ Host phone
   - ssh-keygen
   - ssh-copy-id -i ~/.ssh/id_rsa phone
  - ssh myphone
+- copy from local to srver
+  #+begin_src sh
+scp -P 8022 /path/to/local/file username@address:/path/to/remote/file
+gs
+  #+end_src 
+** CONDA guide
+- conda info 
+- removing env
+  #+begin_src sh
+conda remove -n ENV_NAME --all
+  #+end_src
+- creating env
+  #+begin_src sh
+conda create --name project-env python=3.7
+  #+end_src
+* XOB
+** TODO turn on SYNCTHING daemon
+maybe optimize so that when battery is low is shuts off
+** Succefully created *syncthing* for phone
+** using rclone to create backup on gdrive
+#+begin_src sh
+rclone sync /home/rish/desktop/XOB xob-drive:
+#+end_src
+*** TODO execute rclone daily in night 
+
 * esy-archy
 ** OUTLINE
 ***  basics layer arch
@@ -2852,7 +2917,7 @@ o
 
 ** README
 :PROPERTIES:
-:header-args: :tangle /home/rish/desktop/esy-archy/readme.md
+:header-args: :tangle /home/rish/Desktop/esy-archy/readme.md
 :END:
 this readme is for esy-arch repo
 #+begin_src html
@@ -2901,7 +2966,7 @@ this readme is for esy-arch repo
 
 ** SCRIPT
 :PROPERTIES:
-:header-args: :tangle ~/desktop/esy-archy/setup
+:header-args: :tangle ~/Desktop/esy-archy/setup
     :END:
 *** info
 creating a script which can be used by genral user to setup the emacs and configurational files
@@ -2940,14 +3005,4 @@ creating a script which can be used by genral user to setup the emacs and config
 
 
 
-
-* XOB
-** TODO turn on SYNCTHING daemon
-maybe optimize so that when battery is low is shuts off
-** Succefully created *syncthing* for phone
-** using rclone to create backup on gdrive
-#+begin_src sh
-rclone sync /home/rish/desktop/XOB xob-drive:
-#+end_src
-*** TODO execute rclone daily in night 
 
