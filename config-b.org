@@ -831,14 +831,20 @@ https://github.com/yilkalargaw/org-auto-tangle
 *** org-code-blocks
 **** custom templates
 these templates are custom code blocks
-#+begin_src emacs-lisp
-  (require 'org-tempo)
-  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp") )
-  (add-to-list 'org-structure-template-alist '("conf" . "src conf") )
-  (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
-  (add-to-list 'org-structure-template-alist '("css" . "src css"))  
-  (add-to-list 'org-structure-template-alist '("qw" . "#+QUESTION: \n#+LINK: \n#+SOLUTION: "))
-  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+#+begin_src emac/home/rish/.conda/envs/py/bin/pythons-lisp
+(require 'org-tempo)
+
+;; this changes default location of python interpreter
+ (setq org-babel-python-command "/home/rish/.conda/envs/py/bin/python")
+
+;;(org-confirm-babel-evaluate nil)
+
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp") )
+(add-to-list 'org-structure-template-alist '("conf" . "src conf") )
+(add-to-list 'org-structure-template-alist '("sh" . "src sh"))
+(add-to-list 'org-structure-template-alist '("css" . "src css"))  
+(add-to-list 'org-structure-template-alist '("qw" . "#+QUESTION: \n#+LINK: \n#+SOLUTION: "))
+(add-to-list 'org-structure-template-alist '("py" . "src python"))
 #+end_src
 **** code-block-commentk
 ***** src
@@ -868,7 +874,9 @@ this block automatically detects language and applies respected comment
   (with-eval-after-load 'org
     (org-download-enable)))
 
-((org-mode . ((eval . (setq org-download-image-dir (concat "./" (file-name-base buffer-file-name)))))))
+;;setting default location for images
+(setq-default org-download-image-dir "./.img")
+(setq org-download-delete-when-idle t)
 #+end_src
 ** Development
 
@@ -1221,6 +1229,7 @@ window {
   cursor_shape     block
   url_color        #0087bd
   url_style        dotted
+  enable_audio_bell no
   #Close the terminal without confirmation
   confirm_os_window_close 0
   background_opacity 0.75
